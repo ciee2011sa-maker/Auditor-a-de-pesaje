@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
+<!-- CSS del reporte PDF - fuera del JS -->
+<template id="report_css">
+body{font-family:Arial,sans-serif;color:#111;padding:32px;max-width:700px;margin:0 auto}
+h1{font-size:20px;color:#0a5c47;margin-bottom:4px}
+.sub{font-size:12px;color:#888;margin-bottom:24px}
+h2{font-size:11px;font-weight:bold;color:#0a5c47;text-transform:uppercase;border-bottom:1px solid #0a5c47;padding-bottom:4px;margin:20px 0 10px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+th{background:#f5f5f5;padding:7px 10px;text-align:left;border-bottom:1px solid #ddd;font-size:11px;color:#666}
+td{padding:7px 10px;border-bottom:1px solid #f0f0f0}
+.po-duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.po-box{border-radius:8px;padding:14px;text-align:center}
+.po-box.ra{background:#fef0f0;border:1px solid #f5c0c0}
+.po-box.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.po-lbl{font-size:11px;color:#888;margin-bottom:4px}
+.po-num{font-size:30px;font-weight:bold}
+.po-num.red{color:#c0392b}
+.po-num.grn{color:#0a5c47}
+.po-sub{font-size:11px;color:#aaa;margin-top:3px}
+.po-imp{background:#0a5c47;color:#fff;border-radius:8px;padding:16px}
+.po-ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.po-ii{border-radius:6px;padding:10px;text-align:center;background:rgba(255,255,255,.15)}
+.po-il{font-size:10px;opacity:.75;margin-bottom:3px}
+.po-iv{font-size:20px;font-weight:bold}
+.footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#aaa;text-align:center}
+</template>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#f0f2f0;color:#111;min-height:100vh}
+.app{max-width:720px;margin:0 auto;background:#fff;min-height:100vh}
+.hdr{background:#0a5c47;padding:16px 20px 0;color:#fff}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px}
+.hdr-text h1{font-size:clamp(13px,4vw,17px);font-weight:bold;line-height:1.3}
+.hdr-text p{font-size:clamp(10px,3vw,12px);opacity:.8;margin-top:3px}
+.rbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;min-height:36px}
+.progress{display:flex;overflow-x:auto;scrollbar-width:none}
+.progress::-webkit-scrollbar{display:none}
+.step{flex:1;min-width:52px;padding:8px 4px 7px;text-align:center;font-size:9px;font-weight:bold;color:rgba(255,255,255,.4);border-bottom:3px solid rgba(255,255,255,.15);transition:all .2s;white-space:nowrap}
+.step.active{color:#fff;border-bottom-color:#fff}
+.step.done{color:rgba(255,255,255,.7);border-bottom-color:rgba(255,255,255,.4)}
+.step-num{display:block;font-size:15px;margin-bottom:2px}
+.panel{display:none}
+.panel.active{display:block}
+.cover{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(24px,6vw,48px) clamp(20px,5vw,40px);text-align:center}
+.cover-name{font-size:clamp(20px,6vw,32px);font-weight:bold;color:#0a5c47;letter-spacing:3px;margin-bottom:8px}
+.cover-tag{font-size:clamp(11px,3vw,14px);color:#999;letter-spacing:1px;margin-bottom:clamp(16px,4vw,28px)}
+.cover-divider{width:40px;height:3px;background:#d4b84a;margin:0 auto clamp(16px,4vw,28px)}
+.cover h2{font-size:clamp(17px,5vw,24px);font-weight:bold;color:#1a1a1a;line-height:1.5;max-width:420px;margin-bottom:12px}
+.cover p{font-size:clamp(12px,3.5vw,15px);color:#777;line-height:1.8;max-width:380px;margin-bottom:clamp(24px,6vw,40px)}
+.cover-btn{background:#0a5c47;color:#fff;border:none;padding:clamp(12px,3vw,16px) clamp(28px,7vw,44px);border-radius:10px;font-size:clamp(13px,4vw,16px);font-weight:bold;cursor:pointer;width:100%;max-width:320px}
+.cover-meta{margin-top:16px;font-size:11px;color:#bbb}
+.scard{padding:clamp(16px,4vw,24px);border-bottom:1px solid #eee}
+.stitle{font-size:clamp(13px,3.5vw,15px);font-weight:bold;color:#0a5c47;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.sdesc{font-size:clamp(12px,3.5vw,14px);color:#666;line-height:1.8;margin-bottom:16px}
+.snum{background:#0a5c47;color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:bold;color:#555;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field input{width:100%;padding:clamp(10px,3vw,13px) clamp(10px,3vw,14px);border:1.5px solid #ddd;border-radius:10px;font-size:clamp(15px,4vw,17px);color:#111;background:#fff;appearance:none;-webkit-appearance:none}
+.field input:focus{outline:none;border-color:#0a5c47}
+.field input.opt{border-style:dashed;background:#fafafa}
+.field input[readonly]{background:#f5f5f5;color:#999}
+.field .sub{font-size:11px;color:#aaa;margin-top:4px;line-height:1.5}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.chip{border-radius:8px;padding:clamp(10px,3vw,14px);font-size:clamp(12px,3.5vw,14px);margin:10px 0;line-height:1.8;display:none}
+.chip.info{background:#eaf4fb;border-left:4px solid #2980b9;color:#1a5276}
+.chip.ok{background:#eaf7f2;border-left:4px solid #0a5c47;color:#085041}
+.chip.warn{background:#fffae6;border-left:4px solid #f0a500;color:#7d5a00}
+.chip.danger{background:#fef0f0;border-left:4px solid #e74c3c;color:#7b241c}
+.chip .big{font-size:clamp(18px,5vw,24px);font-weight:bold;display:block;margin-bottom:4px}
+.chip .det{font-size:clamp(11px,3vw,13px);opacity:.85}
+.note{font-size:clamp(11px,3vw,13px);color:#777;line-height:1.7;padding:10px 14px;background:#f9f9f9;border-radius:8px;margin:10px 0}
+.nbtn{width:100%;padding:clamp(14px,4vw,16px);background:#0a5c47;color:#fff;border:none;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;min-height:52px}
+.nbtn:hover{background:#085041}
+.nbtn.outline{background:#fff;color:#0a5c47;border:2px solid #0a5c47;margin-top:12px;border-radius:10px}
+.nbtn.rounded{border-radius:10px;margin-top:12px}
+.rsec{padding:clamp(16px,4vw,24px);border-bottom:1px solid #eee}
+.rstitle{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-bottom:14px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.ccard{border-radius:12px;padding:clamp(14px,4vw,20px) clamp(12px,3vw,18px);text-align:center}
+.ccard.bad{background:#fef0f0;border:2px solid #e74c3c}
+.ccard.good{background:#eaf7f2;border:2px solid #0a5c47}
+.ccard.neutral{background:#fffae6;border:2px solid #f0a500}
+.clbl{font-size:clamp(10px,2.5vw,12px);color:#888;margin-bottom:6px;line-height:1.4}
+.cnum{font-size:clamp(28px,7vw,44px);font-weight:bold;line-height:1;margin-bottom:6px}
+.cnum.red{color:#c0392b}
+.cnum.green{color:#0a5c47}
+.cnum.amber{color:#7d5a00}
+.csub{font-size:clamp(10px,2.5vw,12px);color:#aaa}
+.sbar{border-radius:12px;padding:clamp(12px,3vw,16px) clamp(14px,4vw,20px);display:flex;justify-content:space-between;align-items:center;margin:12px 0;gap:10px}
+.sbar.win{background:#0a5c47;color:#fff}
+.sbar.lose{background:#c0392b;color:#fff}
+.sbl{font-size:clamp(12px,3.5vw,14px);font-weight:bold}
+.sbs{font-size:clamp(10px,2.5vw,12px);opacity:.8;margin-top:3px}
+.sbv{font-size:clamp(22px,6vw,32px);font-weight:bold;white-space:nowrap}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;border:1px solid #eee;margin:8px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:clamp(11px,3vw,13px);min-width:280px}
+.tbl th{font-size:clamp(9px,2.5vw,11px);text-transform:uppercase;letter-spacing:.4px;color:#aaa;padding:8px 10px;border-bottom:1px solid #eee;text-align:left;font-weight:bold;white-space:nowrap;background:#fafafa}
+.tbl td{padding:9px 10px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl4-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl4{min-width:480px}
+.tr{background:#fde8e8;color:#c0392b;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.tg{background:#eaf7f2;color:#085041;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.tb{background:#eaf4fb;color:#1a5276;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.ty{background:#fffae6;color:#856404;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.sim-wrap{background:#f7f7f7;border-radius:12px;padding:clamp(14px,4vw,18px);margin-top:14px}
+.sim-wrap h3{font-size:clamp(11px,3vw,13px);font-weight:bold;color:#0a5c47;margin-bottom:12px;line-height:1.5}
+.sim-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sim-row label{font-size:11px;color:#555;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;flex-basis:100%}
+.sim-row input{width:140px;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:16px}
+.sim-row input:focus{outline:none;border-color:#0a5c47}
+.sim-live{font-size:clamp(12px,3.5vw,14px);flex:1;min-width:120px}
+.techo{background:#eaf7f2;border:1px solid #0a5c47;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:clamp(11px,3vw,13px);color:#085041;line-height:1.8}
+.pblk{border-radius:10px;padding:clamp(12px,3vw,16px);margin-bottom:12px}
+.pblk.ra{background:#fef0f0;border:1px solid #f5c0c0}
+.pblk.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.pblk h4{font-size:12px;font-weight:bold;margin-bottom:10px}
+.pblk.ra h4{color:#7b241c}
+.pblk.ga h4{color:#085041}
+.campo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:480px){.campo-grid{grid-template-columns:1fr}}
+.campo-box{border-radius:10px;padding:clamp(12px,3vw,16px)}
+.campo-box.ra{background:#fef0f0;border:1px solid #f5c0c0}
+.campo-box.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.campo-box-title{font-size:12px;font-weight:bold;margin-bottom:12px}
+.campo-box.ra .campo-box-title{color:#7b241c}
+.campo-box.ga .campo-box-title{color:#085041}
+.sumcard{background:#0a5c47;color:#fff;border-radius:12px;margin:0 0 16px;padding:clamp(16px,4vw,22px)}
+.sumcard h3{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.si{background:rgba(255,255,255,.1);border-radius:8px;padding:clamp(10px,3vw,14px);text-align:center}
+.si-lbl{font-size:clamp(10px,2.5vw,11px);opacity:.7;margin-bottom:4px;line-height:1.4}
+.si-val{font-size:clamp(18px,5vw,24px);font-weight:bold}
+.si-val.big{font-size:clamp(22px,6vw,30px)}
+.imp-block{background:#0a5c47;color:#fff;border-radius:12px;padding:clamp(14px,4vw,18px);margin-top:0}
+.imp-head{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.imp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.imp-item{background:rgba(255,255,255,.12);border-radius:8px;padding:clamp(10px,3vw,14px);text-align:center}
+.imp-item.hi{background:rgba(255,255,255,.22)}
+.imp-lbl{font-size:clamp(10px,2.5vw,11px);opacity:.75;margin-bottom:4px}
+.imp-val{font-size:clamp(16px,5vw,22px);font-weight:bold}
+.imp-item.hi .imp-val{font-size:clamp(20px,6vw,28px)}
+.cta-box{background:#f7f7f7;border-radius:12px;padding:clamp(18px,5vw,24px);text-align:center;margin:20px clamp(16px,4vw,24px) 0}
+.cta-box h3{font-size:clamp(14px,4vw,17px);font-weight:bold;color:#0a5c47;margin-bottom:8px}
+.cta-box p{font-size:clamp(12px,3.5vw,14px);color:#666;line-height:1.8;margin-bottom:16px}
+.cta-main{background:#0a5c47;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;width:100%;min-height:52px}
+.cta-note{font-size:10px;color:#aaa;margin-top:12px}
+.hidden{display:none}
+.sep{height:1px;background:#eee}
+.po{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;overflow-y:auto;padding:clamp(16px,4vw,28px)}
+.po.show{display:block}
+.po-btns{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.po-close{background:#fff;color:#555;border:1px solid #ddd;padding:10px 18px;border-radius:8px;font-size:14px;cursor:pointer;min-height:44px}
+.po-print{background:#0a5c47;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;min-height:44px}
+.po-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #0a5c47;gap:10px;flex-wrap:wrap}
+.po-logo{font-size:clamp(14px,4vw,18px);font-weight:bold;color:#0a5c47}
+.po-fecha{font-size:12px;color:#888}
+.po-sec{margin-bottom:20px}
+.po-sec h2{font-size:11px;font-weight:bold;color:#0a5c47;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid #0a5c47}
+.po-duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.po-box{border-radius:8px;padding:12px;text-align:center}
+.po-box.ra{background:#fef0f0;border:1px solid #f5c0c0}
+.po-box.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.po-lbl{font-size:11px;color:#888;margin-bottom:4px}
+.po-num{font-size:clamp(22px,6vw,30px);font-weight:bold}
+.po-num.red{color:#c0392b}
+.po-num.grn{color:#0a5c47}
+.po-sub{font-size:11px;color:#aaa;margin-top:3px}
+.po-imp{background:#0a5c47;color:#fff;border-radius:8px;padding:14px}
+.po-ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.po-ii{background:rgba(255,255,255,.15);border-radius:6px;padding:10px;text-align:center}
+.po-il{font-size:10px;opacity:.75;margin-bottom:3px}
+.po-iv{font-size:clamp(16px,5vw,22px);font-weight:bold}
+.po-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px}
+.po-tbl th{background:#f5f5f5;padding:6px 8px;text-align:left;border-bottom:1px solid #ddd;font-size:11px;color:#666}
+.po-tbl td{padding:6px 8px;border-bottom:1px solid #f0f0f0}
+.po-footer{margin-top:24px;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#aaa;text-align:center;line-height:1.6}
+@media print{
+  .app{display:none !important}
+  .po{display:block !important;position:static;padding:16px}
+  .po-btns{display:none !important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-text">
+      <h1>Auditoria de Pesaje - Stretch Film</h1>
+      <p>Maquilas Rits - Descubre el costo real de envolver una tarima</p>
+    </div>
+    <button class="rbtn" onclick="location.reload()">Reiniciar</button>
+  </div>
+  <div class="progress">
+    <div class="step active" id="st_0"><span class="step-num">1</span>Espec.</div>
+    <div class="step" id="st_1"><span class="step-num">2</span>Peso</div>
+    <div class="step" id="st_2"><span class="step-num">3</span>Precio</div>
+    <div class="step" id="st_3"><span class="step-num">4</span>Consumo</div>
+    <div class="step" id="st_4"><span class="step-num">5</span>Comparar</div>
+    <div class="step" id="st_5"><span class="step-num">6</span>Resumen</div>
+  </div>
+</div>
+
+<div class="panel active" id="panel_cover">
+  <div class="cover">
+    <div class="cover-name">MAQUILAS RITS</div>
+    <div class="cover-tag">Cambiando al mundo un rollo a la vez</div>
+    <div class="cover-divider"></div>
+    <h2>Descubre en 5 minutos lo que realmente te cuesta envolver una tarima</h2>
+    <p>Esta herramienta analiza el costo real de tu stretch film actual y lo compara con nuestra propuesta. Solo necesitas tu factura y una llamada rapida a planta.</p>
+    <button class="cover-btn" onclick="startAudit()">Comenzar auditoria</button>
+    <div class="cover-meta">Herramienta gratuita &nbsp;·&nbsp; Sin registro &nbsp;·&nbsp; Datos privados</div>
+  </div>
+</div>
+
+<div class="panel" id="panel_0">
+  <div class="scard">
+    <div class="stitle"><span class="snum">1</span>Especificacion del rollo actual</div>
+    <div class="sdesc">Ingresa los datos que aparecen en tu orden de compra o factura.</div>
+    <div class="g3">
+      <div class="field"><label>Ancho (pulg.)</label><input type="number" inputmode="decimal" id="a_ancho" placeholder="ej. 20" oninput="calcTeoA()"></div>
+      <div class="field"><label>Calibre (gauge)</label><input type="number" inputmode="decimal" id="a_cal" placeholder="ej. 80" oninput="calcTeoA()"></div>
+      <div class="field"><label>Longitud (pies)</label><input type="number" inputmode="decimal" id="a_pies" placeholder="ej. 5000" oninput="calcTeoA()"></div>
+    </div>
+    <div class="chip info" id="chip_teo"></div>
+  </div>
+  <button class="nbtn" onclick="goStep(1)">Siguiente: Verificar peso en almacen</button>
+</div>
+
+<div class="panel" id="panel_1">
+  <div class="scard">
+    <div class="stitle"><span class="snum">2</span>Peso real del rollo en almacen</div>
+    <div class="sdesc">Llama a planta y pide que pesen un rollo. Anota el peso bruto y el peso del tubo de carton. Puedes omitirlo y continuar.</div>
+    <div class="g2">
+      <div class="field"><label>Peso bruto (kg) - opcional</label><input type="number" inputmode="decimal" id="a_bruto" placeholder="ej. 10" oninput="calcPesoReal()" class="opt"></div>
+      <div class="field"><label>Peso del tubo (kg) - opcional</label><input type="number" inputmode="decimal" id="a_tara" placeholder="ej. 1" oninput="calcPesoReal()" class="opt"></div>
+    </div>
+    <div class="chip" id="chip_real"></div>
+    <div class="chip" id="chip_alerta"></div>
+  </div>
+  <button class="nbtn" onclick="goStep(2)">Siguiente: Ingresar precio</button>
+</div>
+
+<div class="panel" id="panel_2">
+  <div class="scard">
+    <div class="stitle"><span class="snum">3</span>Precio que pagas actualmente</div>
+    <div class="sdesc">Ingresa el precio por kilo O por rollo. La calculadora completa el otro automaticamente.</div>
+    <div class="g2">
+      <div class="field"><label>Precio por kilo ($/kg)</label><input type="number" inputmode="decimal" id="a_pkg" placeholder="ej. 35" oninput="onPrecioA('kg')"></div>
+      <div class="field"><label>Precio por rollo ($)</label><input type="number" inputmode="decimal" id="a_pro" placeholder="ej. 508.55" oninput="onPrecioA('ro')"></div>
+    </div>
+    <div class="chip" id="chip_pteo"></div>
+    <div class="chip" id="chip_preal"></div>
+  </div>
+  <button class="nbtn" onclick="goStep(3)">Siguiente: Medir consumo por tarima</button>
+</div>
+
+<div class="panel" id="panel_3">
+  <div class="scard">
+    <div class="stitle"><span class="snum">4</span>Consumo real por tarima</div>
+    <div class="sdesc">Pide a planta que envuelvan una tarima, corten el film y lo pesen en gramos.</div>
+    <div class="field"><label>Gramos usados por tarima</label><input type="number" inputmode="decimal" id="a_gramos" placeholder="ej. 500"></div>
+  </div>
+  <button class="nbtn" onclick="calcFase1()">Calcular y ver comparativa con Rits</button>
+</div>
+
+<div class="panel" id="panel_4">
+  <div class="rsec">
+    <div class="rstitle">Tu costo actual por tarima</div>
+    <div id="cards_actual"></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Concepto</th><th>Teorico</th><th>Real</th></tr></thead><tbody id="tbl_actual"></tbody></table></div>
+  </div>
+  <div class="sep"></div>
+  <div class="rsec">
+    <div class="rstitle">Propuesta Rits ECO - Calibre 50</div>
+    <div class="sdesc">La calculadora copia tu especificacion y propone calibre 50.</div>
+    <div class="g3">
+      <div class="field"><label>Ancho (pulg.)</label><input type="number" id="b_ancho" readonly></div>
+      <div class="field"><label>Calibre Rits</label><input type="number" inputmode="decimal" id="b_cal" value="50" oninput="onEspecB()"></div>
+      <div class="field"><label>Longitud (pies)</label><input type="number" inputmode="decimal" id="b_pies" oninput="onEspecB()"></div>
+    </div>
+    <div class="chip info" id="chip_teob"></div>
+    <div class="chip info" id="chip_gramosb"></div>
+    <div class="g2" style="margin-top:12px">
+      <div class="field"><label>Precio por kg Rits - opcional</label><input type="number" inputmode="decimal" id="b_pkg" placeholder="ej. 52" oninput="onPrecioB('kg')" class="opt"></div>
+      <div class="field"><label>Precio por rollo Rits - opcional</label><input type="number" inputmode="decimal" id="b_pro" placeholder="ej. 472.16" oninput="onPrecioB('ro')" class="opt"></div>
+    </div>
+    <div class="chip" id="chip_preciob"></div>
+    <div class="note">Si no tienes una cotizacion formal de Maquilas Rits, el sistema usara tu precio actual como referencia. Esto no representa un precio ofertado.</div>
+    <button class="nbtn rounded" onclick="calcComparativa()">Generar comparativa completa</button>
+    <div id="blk_comp" class="hidden">
+      <div style="margin-top:16px" id="cards_comp"></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Concepto</th><th>Proveedor actual</th><th>Rits ECO</th></tr></thead><tbody id="tbl_comp"></tbody></table></div>
+      <div id="sbar_comp"></div>
+      <div class="sim-wrap">
+        <h3>Simulador: hasta donde puede subir el precio de Rits y seguir siendo mejor opcion?</h3>
+        <div class="sim-row">
+          <label>Precio por kg Rits ($/kg):</label>
+          <input type="number" inputmode="decimal" id="sim_pkg" oninput="simular()">
+          <div class="sim-live" id="sim_result">--</div>
+        </div>
+        <div class="note">Resultados estimados comparativos. Solo una cotizacion formal por correo de Maquilas Rits tiene validez comercial.</div>
+        <div class="techo" id="precio_techo"></div>
+      </div>
+      <div style="margin-top:18px">
+        <div style="font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-bottom:12px">Proyeccion mensual</div>
+        <div class="g2" style="margin-bottom:14px">
+          <div class="field"><label>Rollos al mes</label><input type="number" inputmode="decimal" id="proy_rollos" placeholder="ej. 1000" oninput="calcProy('rollos')" class="opt"></div>
+          <div class="field"><label>O kilos al mes</label><input type="number" inputmode="decimal" id="proy_kilos" placeholder="ej. 14530" oninput="calcProy('kilos')" class="opt"></div>
+        </div>
+        <div id="proy_det" class="hidden">
+          <div class="pblk ra"><h4>Proveedor actual</h4><div class="tbl-wrap"><table class="tbl" id="tbl_pA"></table></div></div>
+          <div class="pblk ga"><h4>Propuesta Rits ECO</h4><div class="tbl-wrap"><table class="tbl" id="tbl_pB"></table></div></div>
+          <div id="proy_sbar"></div>
+        </div>
+      </div>
+      <button class="nbtn rounded" onclick="goStep(5)">Ver resumen ejecutivo</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel_5">
+  <div class="rsec">
+    <div class="rstitle">Resumen ejecutivo</div>
+    <div class="sumcard">
+      <h3>Resultado de la auditoria</h3>
+      <div class="sumgrid" id="sumgrid"></div>
+      <div id="sumbar"></div>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="stitle" style="margin-bottom:10px"><span class="snum">3</span>Prueba en campo - medicion real</div>
+    <div class="sdesc">Envuelve una tarima con cada rollo, corta el film y pesalo en gramos.</div>
+    <div class="campo-grid">
+      <div class="campo-box ra">
+        <div class="campo-box-title">Rollo actual - real</div>
+        <div class="field"><label>Gramos reales por tarima</label><input type="number" inputmode="decimal" id="ra_gramos" placeholder="ej. 520" oninput="calcCampo()"></div>
+        <div class="field"><label>Peso bruto (kg) - opcional</label><input type="number" inputmode="decimal" id="ra_bruto" placeholder="ej. 10" oninput="calcCampo()" class="opt"></div>
+        <div class="field"><label>Peso tubo (kg) - opcional</label><input type="number" inputmode="decimal" id="ra_tara" placeholder="ej. 1" oninput="calcCampo()" class="opt"></div>
+        <div class="field"><label>Tarimas envueltas - opcional</label><input type="number" inputmode="decimal" id="ra_tarimas" placeholder="ej. 17" oninput="calcCampo()" class="opt"><div class="sub">Si no puedes contar se calcula con los gramos</div></div>
+        <div class="chip" id="chip_ra"></div>
+      </div>
+      <div class="campo-box ga">
+        <div class="campo-box-title">Rollo Rits ECO - real</div>
+        <div class="field"><label>Gramos reales por tarima</label><input type="number" inputmode="decimal" id="rb_gramos" placeholder="ej. 300" oninput="calcCampo()"></div>
+        <div class="field"><label>Peso bruto (kg) - opcional</label><input type="number" inputmode="decimal" id="rb_bruto" placeholder="ej. 9.5" oninput="calcCampo()" class="opt"></div>
+        <div class="field"><label>Peso tubo (kg) - opcional</label><input type="number" inputmode="decimal" id="rb_tara" placeholder="ej. 0.42" oninput="calcCampo()" class="opt"></div>
+        <div class="field"><label>Tarimas envueltas - opcional</label><input type="number" inputmode="decimal" id="rb_tarimas" placeholder="ej. 27" oninput="calcCampo()" class="opt"><div class="sub">Si no puedes contar se calcula con los gramos</div></div>
+        <div class="chip" id="chip_rb"></div>
+      </div>
+    </div>
+    <button class="nbtn rounded" onclick="calcFase3()">Ver resultado real vs teorico</button>
+    <div id="res3" class="hidden" style="margin-top:16px">
+      <div id="cards_f3"></div>
+      <div class="tbl4-wrap" style="margin-top:10px"><table class="tbl tbl4"><thead><tr><th>Concepto</th><th>Actual teo.</th><th>Actual real</th><th>Rits teo.</th><th>Rits real</th></tr></thead><tbody id="tbl_f3"></tbody></table></div>
+      <div id="sbar_f3" style="margin-top:10px"></div>
+      <div class="note hidden" id="nota_campo"></div>
+    </div>
+  </div>
+  <div class="cta-box">
+    <h3>Los numeros hablan por si solos</h3>
+    <p>Agenda una visita tecnica gratuita. Llevamos nuestro material a tu planta, envolvemos tarimas reales y te entregamos el reporte con datos firmados. Sin compromiso.</p>
+    <button class="cta-main" onclick="alert('Contacta a tu ejecutivo Maquilas Rits para agendar tu visita tecnica gratuita.')">Solicitar visita tecnica gratuita</button>
+    <div style="margin-top:12px"><button class="nbtn outline" onclick="mostrarReporte()">Imprimir o guardar como PDF</button></div>
+    <div class="cta-note">Maquilas Rits - Cambiando al mundo un rollo a la vez</div>
+  </div>
+</div>
+
+</div>
+
+<div class="po" id="po">
+  <div class="po-btns">
+    <button class="po-close" onclick="el('po').classList.remove('show')">Cerrar</button>
+    <button class="po-print" onclick="descargarHTML()">Descargar para imprimir / PDF</button>
+  </div>
+  <div class="po-hdr">
+    <div class="po-logo">Maquilas Rits - Auditoria de Pesaje</div>
+    <div class="po-fecha" id="po_fecha"></div>
+  </div>
+  <div id="po_body"></div>
+  <div class="po-footer">Reporte generado por Maquilas Rits | Los precios tienen validez solo con cotizacion formal por correo de un agente Maquilas Rits.</div>
+</div>
+
+<script>
+var S={pnA:0,prA:0,usaRealA:false,pkgA_teo:0,proA_teo:0,pkgA_real:0,proA_real:0,pkgA_input:0,proA_input:0,gA:0,tprA_teo:0,ctA_teo:0,tprA_real:0,ctA_real:0,pnB:0,prB:0,gB_teo:0,pkgB_teo:0,proB_teo:0,tprB_teo:0,ctB_teo:0};
+var cur=0;
+function n(id){return parseFloat(document.getElementById(id).value)||0;}
+function el(id){return document.getElementById(id);}
+function show(id,cls,html){var e=el(id);e.className='chip '+cls;e.innerHTML=html;e.style.display='block';}
+function hide(id){el(id).style.display='none';}
+function fmt(v){return '$'+v.toFixed(2);}
+function fmtK(v){return v.toFixed(2)+' kg';}
+function fmtN(v,d){return v.toLocaleString('es-MX',{maximumFractionDigits:d||0});}
+function pesoTeo(a,c,p){return a*(c/100)*p*0.454/2500;}
+function mkrow(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';}
+function mkrow4(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';}
+function mkrow2(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td style="color:#888;font-size:11px">'+r[2]+'</td></tr>';}
+
+function startAudit(){
+  el('panel_cover').classList.remove('active');
+  el('panel_0').classList.add('active');
+  el('st_0').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goStep(s){
+  el('panel_'+cur).classList.remove('active');
+  el('st_'+cur).classList.remove('active');
+  el('st_'+cur).classList.add('done');
+  cur=s;
+  el('panel_'+s).classList.add('active');
+  el('st_'+s).classList.remove('done');
+  el('st_'+s).classList.add('active');
+  if(s===5){buildResumen();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function calcTeoA(){
+  var a=n('a_ancho'),c=n('a_cal'),p=n('a_pies');
+  if(a&&c&&p){
+    S.pnA=pesoTeo(a,c,p);
+    if(!S.usaRealA) S.prA=S.pnA;
+    show('chip_teo','info','<span class="big">'+S.pnA.toFixed(2)+' kg</span><span class="det">Peso teorico | '+a+' x ('+c+'/100) x '+p+' x 0.454 / 2500 | <a href="https://www.wplastics.com/calculators-and-converters" target="_blank" style="color:#2980b9">Verificar externamente</a> (resultado en libras, x 0.454 para kg)</span>');
+  } else { hide('chip_teo'); }
+}
+
+function calcPesoReal(){
+  var br=n('a_bruto'),ta=n('a_tara');
+  if(br>0){
+    S.prA=br-ta; S.usaRealA=true;
+    show('chip_real','ok','<span class="big">'+S.prA.toFixed(2)+' kg netos</span><span class="det">'+br+' kg bruto - '+ta+' kg carton</span>');
+    if(S.pnA>0){
+      var dif=S.pnA-S.prA;
+      if(dif>0.05){show('chip_alerta','danger','<span class="big">-'+dif.toFixed(2)+' kg por rollo ('+((dif/S.pnA)*100).toFixed(1)+'%)</span><span class="det">Especificacion: '+S.pnA.toFixed(2)+' kg | Real: '+S.prA.toFixed(2)+' kg | El rollo pesa menos de lo especificado.</span>');}
+      else{show('chip_alerta','ok','El peso real coincide con la especificacion.');}
+    }
+    recalcPreciosA();
+  } else {
+    S.usaRealA=false; if(S.pnA>0) S.prA=S.pnA;
+    hide('chip_real'); hide('chip_alerta');
+  }
+}
+
+function onPrecioA(tipo){
+  if(tipo==='kg'){S.pkgA_input=n('a_pkg');S.proA_input=0;el('a_pro').value='';}
+  else{S.proA_input=n('a_pro');S.pkgA_input=0;el('a_pkg').value='';}
+  recalcPreciosA();
+}
+
+function recalcPreciosA(){
+  if(S.pkgA_input>0&&S.pnA>0){
+    S.pkgA_teo=S.pkgA_input; S.proA_teo=S.pkgA_input*S.pnA;
+    show('chip_pteo','info','<span class="det">Precio por rollo (peso teorico): <b>'+fmt(S.proA_teo)+'</b> | '+fmt(S.pkgA_input)+'/kg x '+S.pnA.toFixed(2)+' kg</span>');
+  } else if(S.proA_input>0&&S.pnA>0){
+    S.proA_teo=S.proA_input; S.pkgA_teo=S.proA_input/S.pnA;
+    show('chip_pteo','info','<span class="det">Precio por kg (peso teorico): <b>'+fmt(S.pkgA_teo)+'</b> | '+fmt(S.proA_input)+' / '+S.pnA.toFixed(2)+' kg</span>');
+  } else { hide('chip_pteo'); }
+  if(S.usaRealA&&S.prA>0&&S.proA_teo>0){
+    S.pkgA_real=S.proA_teo/S.prA; S.proA_real=S.proA_teo;
+    var dif=S.pnA-S.prA;
+    if(dif>0.05){
+      var exc=((S.pkgA_real-S.pkgA_teo)/S.pkgA_teo*100).toFixed(1);
+      show('chip_preal','danger','<span class="big">'+fmt(S.pkgA_real)+'/kg real</span><span class="det">'+fmt(S.proA_teo)+' / '+S.prA.toFixed(2)+' kg reales | Pagas '+exc+'% mas por kilo porque el rollo pesa menos de lo especificado.</span>');
+    } else { hide('chip_preal'); }
+  } else { S.pkgA_real=S.pkgA_teo; S.proA_real=S.proA_teo; hide('chip_preal'); }
+}
+
+function calcFase1(){
+  calcTeoA(); calcPesoReal(); recalcPreciosA();
+  S.gA=n('a_gramos');
+  if(!S.pnA){alert('Regresa al paso 1 e ingresa la especificacion.');return;}
+  if(!S.proA_teo){alert('Regresa al paso 3 e ingresa el precio.');return;}
+  if(!S.gA){alert('Ingresa los gramos usados por tarima.');return;}
+  S.tprA_teo=(S.pnA*1000)/S.gA; S.ctA_teo=S.proA_teo/S.tprA_teo;
+  S.tprA_real=(S.prA*1000)/S.gA; S.ctA_real=S.usaRealA?(S.proA_teo/S.tprA_real):S.ctA_teo;
+  var igual=Math.abs(S.ctA_teo-S.ctA_real)<0.01;
+  var html='';
+  if(!igual){
+    html='<div class="duo"><div class="ccard neutral"><div class="clbl">Costo teorico por tarima</div><div class="cnum amber">'+fmt(S.ctA_teo)+'</div><div class="csub">Con peso de especificacion</div></div><div class="ccard bad"><div class="clbl">Costo REAL por tarima</div><div class="cnum red">'+fmt(S.ctA_real)+'</div><div class="csub">Con peso fisico en almacen</div></div></div>';
+  } else {
+    html='<div style="margin-bottom:12px"><div class="ccard '+(S.usaRealA?'bad':'neutral')+'"><div class="clbl">Costo por tarima envuelta</div><div class="cnum '+(S.usaRealA?'red':'amber')+'">'+fmt(S.ctA_real)+'</div><div class="csub">'+(S.usaRealA?'Con peso real medido':'Con peso teorico')+'</div></div></div>';
+  }
+  el('cards_actual').innerHTML=html;
+  el('tbl_actual').innerHTML=[
+    ['Peso del rollo',fmtK(S.pnA)+' <span class="tb">especif.</span>',S.usaRealA?fmtK(S.prA)+' <span class="tr">real</span>':'= teorico'],
+    ['Precio por kg',fmt(S.pkgA_teo),S.usaRealA&&!igual?'<b>'+fmt(S.pkgA_real)+'</b> <span class="tr">real</span>':'= teorico'],
+    ['Precio por rollo',fmt(S.proA_teo),fmt(S.proA_real)],
+    ['Gramos por tarima',S.gA+' g',S.gA+' g'],
+    ['Tarimas por rollo',S.tprA_teo.toFixed(1),S.usaRealA?S.tprA_real.toFixed(1):'= teorico'],
+    ['Costo por tarima',fmt(S.ctA_teo),'<b class="tr">'+fmt(S.ctA_real)+'</b>']
+  ].map(mkrow).join('');
+  el('b_ancho').value=n('a_ancho')||''; el('b_pies').value=n('a_pies')||'';
+  onEspecB(); goStep(4);
+}
+
+function onEspecB(){
+  var a=n('b_ancho')||n('a_ancho'),c=n('b_cal'),p=n('b_pies');
+  if(a&&c&&p){S.pnB=pesoTeo(a,c,p);S.prB=S.pnB;show('chip_teob','info','<span class="det">Peso teorico rollo Rits: <b>'+S.pnB.toFixed(2)+' kg</b></span>');}
+  else{hide('chip_teob');}
+  actualizarGramosB();
+}
+
+function actualizarGramosB(){
+  var cA=n('a_cal'),cB=n('b_cal'),gA=S.gA||n('a_gramos');
+  if(cA>0&&cB>0&&gA>0){
+    var pct=(cA-cB)/cA; S.gB_teo=gA*(1-pct);
+    show('chip_gramosb','info','<span class="det">Consumo estimado Rits: <b>'+S.gB_teo.toFixed(0)+' g/tarima</b> | Reduccion del '+(pct*100).toFixed(1)+'% proporcional al calibre. Se confirma con visita tecnica.</span>');
+  }
+}
+
+function onPrecioB(tipo){
+  if(tipo==='kg'){
+    S.pkgB_teo=n('b_pkg'); el('b_pro').value='';
+    if(S.pkgB_teo&&S.prB>0){S.proB_teo=S.pkgB_teo*S.prB;show('chip_preciob','ok','<span class="det">Precio por rollo Rits: <b>'+fmt(S.proB_teo)+'</b></span>');}
+  } else {
+    S.proB_teo=n('b_pro'); el('b_pkg').value='';
+    if(S.proB_teo&&S.prB>0){S.pkgB_teo=S.proB_teo/S.prB;show('chip_preciob','ok','<span class="det">Precio por kg Rits: <b>'+fmt(S.pkgB_teo)+'</b></span>');}
+  }
+}
+
+function calcComparativa(){
+  onEspecB(); actualizarGramosB();
+  if(!S.pnB||!S.gB_teo){alert('Completa la especificacion del rollo Rits.');return;}
+  var sinPrecio=(S.pkgB_teo===0&&S.proB_teo===0);
+  var pkgB=sinPrecio?S.pkgA_teo:S.pkgB_teo;
+  var proB=pkgB*S.prB;
+  if(!sinPrecio&&S.proB_teo>0){proB=S.proB_teo;pkgB=S.proB_teo/S.prB;}
+  S.pkgB_teo=pkgB; S.proB_teo=proB;
+  if(sinPrecio){el('b_pkg').placeholder='Default: $'+S.pkgA_teo.toFixed(2)+' (tu precio actual)';el('b_pro').placeholder='Default: $'+proB.toFixed(2)+' (tu precio actual)';}
+  S.tprB_teo=(S.prB*1000)/S.gB_teo; S.ctB_teo=proB/S.tprB_teo;
+  var ctA=S.usaRealA?S.ctA_real:S.ctA_teo;
+  var tprA=S.usaRealA?S.tprA_real:S.tprA_teo;
+  var proA=S.usaRealA?S.proA_real:S.proA_teo;
+  var diff=ctA-S.ctB_teo;
+  var pct=ctA>0?(diff/ctA*100).toFixed(1):0;
+  el('cards_comp').innerHTML='<div class="duo"><div class="ccard bad"><div class="clbl">Costo actual / tarima</div><div class="cnum red">'+fmt(ctA)+'</div><div class="csub">'+(S.usaRealA?'Con peso real':'Con peso teorico')+'</div></div><div class="ccard good"><div class="clbl">Costo Rits ECO / tarima</div><div class="cnum green">'+fmt(S.ctB_teo)+'</div><div class="csub">'+(sinPrecio?'Con tu precio como referencia':'Estimado teorico')+'</div></div></div>';
+  el('tbl_comp').innerHTML=[
+    ['Calibre',n('a_cal')+' g <span class="tr">actual</span>',n('b_cal')+' g <span class="tg">Rits</span>'],
+    ['Peso del rollo',fmtK(S.usaRealA?S.prA:S.pnA)+(S.usaRealA?' <span class="tr">real</span>':' <span class="tb">teo.</span>'),fmtK(S.prB)+' <span class="tb">teo.</span>'],
+    ['Gramos por tarima',S.gA+' g <span class="tr">medido</span>',S.gB_teo.toFixed(0)+' g <span class="ty">estimado</span>'],
+    ['Tarimas por rollo',tprA.toFixed(1),S.tprB_teo.toFixed(1)],
+    ['Precio por kg',fmt(S.usaRealA?S.pkgA_real:S.pkgA_teo),fmt(pkgB)+(sinPrecio?' <span class="ty">ref.</span>':'')],
+    ['Precio por rollo',fmt(proA),fmt(proB)+(sinPrecio?' <span class="ty">ref.</span>':'')],
+    ['Costo por tarima','<b class="tr">'+fmt(ctA)+'</b>','<b class="tg">'+fmt(S.ctB_teo)+'</b>']
+  ].map(mkrow).join('');
+  el('sbar_comp').innerHTML='<div class="sbar '+(diff>0?'win':'lose')+'"><div><div class="sbl">Ahorro '+(sinPrecio?'minimo':'estimado')+' por tarima</div><div class="sbs">'+(diff>0?'Rits ECO es '+pct+'% mas barato por tarima':'Revisar parametros')+'</div></div><div class="sbv">'+(diff>=0?'+':'')+fmt(diff)+'</div></div>';
+  var techo=S.gB_teo>0?(ctA*1000)/S.gB_teo:0;
+  el('sim_pkg').min=S.pkgA_teo.toFixed(2);
+  el('sim_pkg').placeholder='Min $'+S.pkgA_teo.toFixed(2);
+  el('precio_techo').innerHTML='<b>Precio maximo Rits donde aun conviene: '+fmt(techo)+'/kg</b><br>Con cualquier precio menor a '+fmt(techo)+' el costo por tarima Rits sera menor al actual de '+fmt(ctA)+'.';
+  simular();
+  el('proy_rollos').value=''; el('proy_kilos').value='';
+  el('proy_det').classList.add('hidden');
+  el('blk_comp').classList.remove('hidden');
+}
+
+function simular(){
+  var pkg=n('sim_pkg');
+  if(!pkg||!S.gB_teo) return;
+  var ctA=S.usaRealA?S.ctA_real:S.ctA_teo;
+  var ctSim=(pkg/1000)*S.gB_teo;
+  var diff=ctA-ctSim;
+  var color=diff>0?'#085041':'#c0392b';
+  el('sim_result').innerHTML='Costo Rits: <b style="color:'+color+'">'+fmt(ctSim)+'</b>/tarima | '+(diff>0?'<span style="color:#085041">Ahorro '+fmt(diff)+'</span>':'<span style="color:#c0392b">Mas caro '+fmt(-diff)+'</span>');
+  if(n('proy_rollos')>0) calcProy('rollos');
+  else if(n('proy_kilos')>0) calcProy('kilos');
+}
+
+function calcProy(fuente){
+  if(fuente==='rollos'&&n('proy_rollos')>0) el('proy_kilos').value='';
+  if(fuente==='kilos'&&n('proy_kilos')>0) el('proy_rollos').value='';
+  var tprA=S.usaRealA?S.tprA_real:S.tprA_teo;
+  var proA=S.usaRealA?S.proA_real:S.proA_teo;
+  var prA=S.usaRealA?S.prA:S.pnA;
+  var pkgB=n('sim_pkg')>0?n('sim_pkg'):(S.pkgB_teo>0?S.pkgB_teo:S.pkgA_teo);
+  var proB_r=pkgB*S.prB;
+  var roA=0;
+  if(fuente==='rollos'||n('proy_rollos')>0){roA=n('proy_rollos');}
+  else if(fuente==='kilos'||n('proy_kilos')>0){var km=n('proy_kilos');roA=prA>0?km/prA:0;}
+  if(!roA){el('proy_det').classList.add('hidden');return;}
+  var tarTot=tprA*roA;
+  var roBc=Math.ceil(tarTot/S.tprB_teo);
+  var kgA_teo=roA*S.pnA,kgA_real=roA*prA,kgB=roBc*S.prB;
+  var stA=roA*proA,stB=roBc*proB_r,ahorro=stA-stB;
+  var hd='<thead><tr><th>Concepto</th><th>Valor</th><th>Como se calculo</th></tr></thead><tbody>';
+  el('tbl_pA').innerHTML=hd+[
+    ['Rollos al mes',fmtN(roA,0)+' rollos','dato ingresado'],
+    ['Kilos segun especif.',fmtN(kgA_teo,2)+' kg',fmtN(roA,0)+' x '+S.pnA.toFixed(2)+' kg'],
+    ['Kilos reales',S.usaRealA?fmtN(kgA_real,2)+' kg':'= teorico',S.usaRealA?fmtN(roA,0)+' x '+prA.toFixed(2)+' kg':''],
+    ['Tarimas que envuelve',fmtN(tarTot,0)+' tarimas',prA.toFixed(2)+' x 1000 / '+S.gA+' g x '+fmtN(roA,0)],
+    ['Precio por rollo',fmt(proA),fmt(S.usaRealA?S.pkgA_real:S.pkgA_teo)+'/kg x '+prA.toFixed(2)+' kg'],
+    ['Subtotal en factura','<b>$'+fmtN(stA,0)+'</b>',fmtN(roA,0)+' x '+fmt(proA)]
+  ].map(mkrow2).join('')+'</tbody>';
+  el('tbl_pB').innerHTML=hd+[
+    ['Tarimas a cubrir',fmtN(tarTot,0)+' tarimas','misma cantidad'],
+    ['Rollos Rits necesarios','<b>'+roBc+'</b> rollos',fmtN(tarTot,0)+' / '+S.tprB_teo.toFixed(2)+' tar/rollo'],
+    ['Kilos Rits',fmtN(kgB,2)+' kg',roBc+' x '+S.prB.toFixed(2)+' kg'],
+    ['Precio por kg',fmt(pkgB),'simulador'],
+    ['Precio por rollo',fmt(proB_r),fmt(pkgB)+' x '+S.prB.toFixed(2)+' kg'],
+    ['Subtotal en factura','<b>$'+fmtN(stB,0)+'</b>',roBc+' x '+fmt(proB_r)]
+  ].map(mkrow2).join('')+'</tbody>';
+  el('proy_sbar').innerHTML='<div class="sbar '+(ahorro>0?'win':'lose')+'"><div><div class="sbl">Ahorro mensual en factura</div><div class="sbs">$'+fmtN(stA,0)+' actual vs $'+fmtN(stB,0)+' con Rits</div></div><div class="sbv">'+(ahorro>=0?'+':'')+' $'+fmtN(ahorro,0)+'</div></div>';
+  el('proy_det').classList.remove('hidden');
+}
+
+function buildResumen(){
+  var ctA=S.usaRealA?S.ctA_real:S.ctA_teo;
+  var diff=ctA-S.ctB_teo;
+  var tprA=S.usaRealA?S.tprA_real:S.tprA_teo;
+  var roMes=n('proy_rollos')>0?n('proy_rollos'):(n('proy_kilos')>0?n('proy_kilos')/(S.usaRealA?S.prA:S.pnA):0);
+  var tarMes=roMes>0?tprA*roMes:0;
+  var aMes=tarMes>0?diff*tarMes:0;
+  var aAnual=aMes*12;
+  el('sumgrid').innerHTML='<div class="si"><div class="si-lbl">Costo actual / tarima</div><div class="si-val big">'+fmt(ctA)+'</div></div>'+
+    '<div class="si"><div class="si-lbl">Costo Rits ECO / tarima</div><div class="si-val big">'+fmt(S.ctB_teo)+'</div></div>'+
+    (tarMes>0
+      ?'<div class="si"><div class="si-lbl">Ahorro mensual</div><div class="si-val">$'+fmtN(aMes,0)+'</div></div><div class="si"><div class="si-lbl">Ahorro anual</div><div class="si-val">$'+fmtN(aAnual,0)+'</div></div>'
+      :'<div class="si" style="grid-column:span 2"><div class="si-lbl">Ahorro por tarima</div><div class="si-val big">'+(diff>=0?'+':'')+fmt(diff)+'</div><div style="font-size:11px;opacity:.6;margin-top:4px">Ingresa tu volumen mensual para ver el ahorro mensual y anual</div></div>');
+  el('sumbar').innerHTML=(tarMes>0
+    ?'<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:14px 16px"><div style="font-size:11px;opacity:.7;margin-bottom:10px">Con '+fmtN(roMes,0)+' rollos/mes - '+fmtN(tarMes,0)+' tarimas/mes</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="text-align:center"><div style="font-size:11px;opacity:.7">Cada mes</div><div style="font-size:clamp(20px,6vw,28px);font-weight:bold">$'+fmtN(aMes,0)+'</div></div><div style="text-align:center"><div style="font-size:11px;opacity:.7">Cada anio</div><div style="font-size:clamp(20px,6vw,28px);font-weight:bold">$'+fmtN(aAnual,0)+'</div></div></div></div>'
+    :'<div style="background:rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-size:12px;opacity:.8">Ahorro por tarima</div><div style="font-size:clamp(20px,6vw,26px);font-weight:bold">'+(diff>=0?'+':'')+fmt(diff)+' / tarima</div></div>');
+}
+
+function calcCampo(){
+  var raG=n('ra_gramos'),raBr=n('ra_bruto'),raTa=n('ra_tara'),raTar=n('ra_tarimas');
+  var raPeso=raBr>0?raBr-raTa:(S.usaRealA?S.prA:S.pnA);
+  var raTprF=raTar>0?raTar:(raG>0?(raPeso*1000)/raG:0);
+  if(raG>0){
+    var proA2=S.usaRealA?S.proA_real:S.proA_teo;
+    var ctRA=raTprF>0?proA2/raTprF:0;
+    show('chip_ra','info','<span class="det">Gramos: <b>'+raG+'g</b> | Peso rollo: <b>'+raPeso.toFixed(2)+'kg</b>'+(raBr>0?' (medido)':' (teorico)')+'<br>Tarimas/rollo: <b>'+raTprF.toFixed(1)+'</b>'+(raTar>0?' (contadas)':' (calculado)')+(ctRA>0?'<br>Costo real/tarima: <b>$'+ctRA.toFixed(2)+'</b>':'')+'</span>');
+  } else { hide('chip_ra'); }
+  var rbG=n('rb_gramos'),rbBr=n('rb_bruto'),rbTa=n('rb_tara'),rbTar=n('rb_tarimas');
+  var rbPeso=rbBr>0?rbBr-rbTa:S.prB;
+  var rbTprF=rbTar>0?rbTar:(rbG>0?(rbPeso*1000)/rbG:0);
+  if(rbG>0){
+    var proB2=S.proB_teo>0?S.proB_teo:(S.pkgB_teo>0?S.pkgB_teo*S.prB:0);
+    var ctRB=(rbTprF>0&&proB2>0)?proB2/rbTprF:0;
+    show('chip_rb','ok','<span class="det">Gramos: <b>'+rbG+'g</b> | Peso rollo: <b>'+rbPeso.toFixed(2)+'kg</b>'+(rbBr>0?' (medido)':' (teorico)')+'<br>Tarimas/rollo: <b>'+rbTprF.toFixed(1)+'</b>'+(rbTar>0?' (contadas)':' (calculado)')+(ctRB>0?'<br>Costo real/tarima: <b>$'+ctRB.toFixed(2)+'</b>':'')+'</span>');
+  } else { hide('chip_rb'); }
+}
+
+function calcFase3(){
+  var raG=n('ra_gramos'),rbG=n('rb_gramos');
+  if(!raG&&!rbG){alert('Ingresa al menos los gramos reales de uno de los dos rollos.');return;}
+  var raBr=n('ra_bruto'),raTa=n('ra_tara'),raTar=n('ra_tarimas');
+  var rbBr=n('rb_bruto'),rbTa=n('rb_tara'),rbTar=n('rb_tarimas');
+  var raPeso=raBr>0?raBr-raTa:(S.usaRealA?S.prA:S.pnA);
+  var rbPeso=rbBr>0?rbBr-rbTa:S.prB;
+  var raTprReal=raG>0?(raTar>0?raTar:(raPeso*1000)/raG):0;
+  var rbTprReal=rbG>0?(rbTar>0?rbTar:(rbPeso*1000)/rbG):0;
+  var proA=S.usaRealA?S.proA_real:S.proA_teo;
+  var proB=S.proB_teo>0?S.proB_teo:(S.pkgB_teo>0?S.pkgB_teo*S.prB:0);
+  var ctA_real=(raG>0&&raTprReal>0)?proA/raTprReal:(S.usaRealA?S.ctA_real:S.ctA_teo);
+  var ctB_real=(rbG>0&&rbTprReal>0&&proB>0)?proB/rbTprReal:S.ctB_teo;
+  var ctA_teo=S.usaRealA?S.ctA_real:S.ctA_teo;
+  var tprA_teo=S.usaRealA?S.tprA_real:S.tprA_teo;
+  var diff=ctA_real-ctB_real;
+  var raTprShow=raTprReal>0?raTprReal:tprA_teo;
+  var rbTprShow=rbTprReal>0?rbTprReal:S.tprB_teo;
+  var roMes2=n('proy_rollos')>0?n('proy_rollos'):(n('proy_kilos')>0?n('proy_kilos')/(S.usaRealA?S.prA:S.pnA):0);
+  var bloqueAhorro='';
+  if(!roMes2||!proB){
+    bloqueAhorro='<div class="note" style="margin-top:0">Ingresa tu volumen mensual en la proyeccion para ver el ahorro mensual y anual con datos reales.</div>';
+  } else {
+    var tarMesR=raTprShow*roMes2;
+    var roBR=Math.ceil(tarMesR/rbTprShow);
+    var stA2=roMes2*proA;
+    var stB2=roBR*proB;
+    var aMes2=stA2-stB2;
+    var aAnual2=aMes2*12;
+    bloqueAhorro='<div class="imp-block"><div class="imp-head">Con '+fmtN(roMes2,0)+' rollos/mes - '+fmtN(tarMesR,0)+' tarimas/mes - '+roBR+' rollos Rits</div><div class="imp-grid"><div class="imp-item"><div class="imp-lbl">Factura actual / mes</div><div class="imp-val">$'+fmtN(stA2,0)+'</div></div><div class="imp-item"><div class="imp-lbl">Factura Rits / mes</div><div class="imp-val">$'+fmtN(stB2,0)+'</div></div><div class="imp-item hi"><div class="imp-lbl">Ahorras cada mes</div><div class="imp-val">'+(aMes2>=0?'+':'')+' $'+fmtN(aMes2,0)+'</div></div><div class="imp-item hi"><div class="imp-lbl">Ahorras cada anio</div><div class="imp-val">'+(aAnual2>=0?'+':'')+' $'+fmtN(aAnual2,0)+'</div></div></div></div>';
+  }
+  el('cards_f3').innerHTML=
+    '<div class="duo"><div class="ccard bad"><div class="clbl">Proveedor actual - costo real / tarima</div><div class="cnum red">'+fmt(ctA_real)+'</div><div class="csub">'+(raG>0?raG+' g medidos':'dato anterior')+'</div></div><div class="ccard good"><div class="clbl">Rits ECO - costo real / tarima</div><div class="cnum green">'+fmt(ctB_real)+'</div><div class="csub">'+(rbG>0?rbG+' g medidos':'estimado teorico')+'</div></div></div>'+
+    '<div class="duo" style="margin-top:0"><div style="background:#fef0f0;border:1px solid #f5c0c0;border-radius:10px;padding:14px;text-align:center"><div style="font-size:11px;color:#888;margin-bottom:4px">Tarimas por rollo</div><div style="font-size:clamp(24px,7vw,32px);font-weight:bold;color:#c0392b">'+raTprShow.toFixed(1)+'</div><div style="font-size:11px;color:#aaa;margin-top:4px">'+(raTar>0?'contadas':raBr>0?'peso real':'peso teorico')+'</div></div><div style="background:#eaf7f2;border:1px solid #a8dfc8;border-radius:10px;padding:14px;text-align:center"><div style="font-size:11px;color:#888;margin-bottom:4px">Tarimas por rollo</div><div style="font-size:clamp(24px,7vw,32px);font-weight:bold;color:#0a5c47">'+rbTprShow.toFixed(1)+'</div><div style="font-size:11px;color:#aaa;margin-top:4px">'+(rbTar>0?'contadas':rbBr>0?'peso real':'peso teorico')+'</div></div></div>'+
+    bloqueAhorro;
+  el('tbl_f3').innerHTML=[
+    ['Gramos/tarima',S.gA+' g <span class="tb">teo.</span>',raG>0?raG+' g <span class="tr">real</span>':'--',S.gB_teo.toFixed(0)+' g <span class="tb">teo.</span>',rbG>0?rbG+' g <span class="tg">real</span>':'--'],
+    ['Peso rollo',fmtK(S.usaRealA?S.prA:S.pnA),raBr>0?fmtK(raBr-raTa)+' <span class="tr">med.</span>':'= ant.',fmtK(S.prB),rbBr>0?fmtK(rbBr-rbTa)+' <span class="tg">med.</span>':'= teo.'],
+    ['Tarimas/rollo',tprA_teo.toFixed(1),raTprReal>0?raTprReal.toFixed(1)+(raTar>0?' <span class="tr">cont.</span>':' <span class="tr">calc.</span>'):'--',S.tprB_teo.toFixed(1),rbTprReal>0?rbTprReal.toFixed(1)+(rbTar>0?' <span class="tg">cont.</span>':' <span class="tg">calc.</span>'):'--'],
+    ['Costo/tarima','<b>'+fmt(ctA_teo)+'</b>','<b class="tr">'+fmt(ctA_real)+'</b>','<b>'+fmt(S.ctB_teo)+'</b>','<b class="tg">'+fmt(ctB_real)+'</b>']
+  ].map(mkrow4).join('');
+  el('sbar_f3').innerHTML='<div class="sbar '+(diff>0?'win':'lose')+'"><div><div class="sbl">Ahorro real confirmado en campo</div><div class="sbs">'+(diff>0?'Los datos confirman la propuesta Rits':'Revisar parametros de maquina')+'</div></div><div class="sbv">'+(diff>=0?'+':'')+fmt(diff)+' / tarima</div></div>';
+  var nota='';
+  if(!raG) nota='Costo actual con datos de pasos anteriores. ';
+  if(!rbG) nota+='Costo Rits con consumo estimado. ';
+  if(nota){el('nota_campo').textContent=nota+'Para mayor precision ingresa gramos reales de ambos rollos.';el('nota_campo').classList.remove('hidden');}
+  else{el('nota_campo').classList.add('hidden');}
+  el('res3').classList.remove('hidden');
+}
+
+function mostrarReporte(){
+  var ctA=S.usaRealA?S.ctA_real:S.ctA_teo;
+  var ctB=S.ctB_teo;
+  var diff=ctA-ctB;
+  var tprA=S.usaRealA?S.tprA_real:S.tprA_teo;
+  var proA=S.usaRealA?S.proA_real:S.proA_teo;
+  var proB=S.proB_teo;
+  var roMes=n('proy_rollos')>0?n('proy_rollos'):(n('proy_kilos')>0?n('proy_kilos')/(S.usaRealA?S.prA:S.pnA):0);
+  var tarMes=roMes>0?tprA*roMes:0;
+  var aMes=tarMes>0?diff*tarMes:0;
+  var aAnual=aMes*12;
+  var raG=n('ra_gramos'),rbG=n('rb_gramos');
+  var raBr=n('ra_bruto'),raTa=n('ra_tara'),raTar=n('ra_tarimas');
+  var rbBr=n('rb_bruto'),rbTa=n('rb_tara'),rbTar=n('rb_tarimas');
+  var raPeso=raBr>0?raBr-raTa:(S.usaRealA?S.prA:S.pnA);
+  var rbPeso=rbBr>0?rbBr-rbTa:S.prB;
+  var raTprR=raG>0?(raTar>0?raTar:(raPeso*1000)/raG):tprA;
+  var rbTprR=rbG>0?(rbTar>0?rbTar:(rbPeso*1000)/rbG):S.tprB_teo;
+  var roBR=roMes>0?Math.ceil((raTprR*roMes)/rbTprR):0;
+  var stA2=roMes>0?roMes*proA:0;
+  var stB2=roBR>0?roBR*proB:0;
+  var aMesR=stA2-stB2;
+  var aAnualR=aMesR*12;
+  var hoy=new Date();
+  el('po_fecha').textContent=hoy.getDate()+'/'+(hoy.getMonth()+1)+'/'+hoy.getFullYear();
+  var h='';
+  h+='<div class="po-sec"><h2>Especificacion del rollo</h2><table class="po-tbl"><thead><tr><th>Dato</th><th>Proveedor actual</th><th>Rits ECO</th></tr></thead><tbody>'+
+    '<tr><td>Calibre (gauge)</td><td>'+n('a_cal')+'</td><td>'+n('b_cal')+'</td></tr>'+
+    '<tr><td>Ancho (pulgadas)</td><td>'+n('a_ancho')+'</td><td>'+n('b_ancho')+'</td></tr>'+
+    '<tr><td>Longitud (pies)</td><td>'+n('a_pies')+'</td><td>'+n('b_pies')+'</td></tr>'+
+    '<tr><td>Peso teorico</td><td>'+S.pnA.toFixed(2)+' kg</td><td>'+S.pnB.toFixed(2)+' kg</td></tr>'+
+    (S.usaRealA?'<tr><td>Peso real en almacen</td><td>'+S.prA.toFixed(2)+' kg</td><td>'+S.prB.toFixed(2)+' kg</td></tr>':'')+
+    '</tbody></table></div>';
+  h+='<div class="po-sec"><h2>Costo por tarima envuelta</h2><div class="po-duo"><div class="po-box ra"><div class="po-lbl">Proveedor actual</div><div class="po-num red">'+fmt(ctA)+'</div><div class="po-sub">'+S.gA+' g/tarima | '+fmt(S.usaRealA?S.pkgA_real:S.pkgA_teo)+'/kg</div></div><div class="po-box ga"><div class="po-lbl">Rits ECO</div><div class="po-num grn">'+fmt(ctB)+'</div><div class="po-sub">'+S.gB_teo.toFixed(0)+' g/tarima | '+fmt(S.pkgB_teo)+'/kg</div></div></div></div>';
+  if(raG>0||rbG>0){
+    h+='<div class="po-sec"><h2>Medicion real en campo</h2><table class="po-tbl"><thead><tr><th>Dato</th><th>Actual real</th><th>Rits real</th></tr></thead><tbody>'+
+      '<tr><td>Gramos por tarima</td><td>'+(raG>0?raG+' g':'--')+'</td><td>'+(rbG>0?rbG+' g':'--')+'</td></tr>'+
+      '<tr><td>Tarimas por rollo</td><td>'+raTprR.toFixed(1)+'</td><td>'+rbTprR.toFixed(1)+'</td></tr>'+
+      '<tr><td>Costo real por tarima</td><td>'+fmt(ctA)+'</td><td>'+fmt(ctB)+'</td></tr>'+
+      '</tbody></table></div>';
+  }
+  if(roMes>0&&proB>0){
+    h+='<div class="po-sec"><h2>Impacto economico</h2><div class="po-imp"><div style="font-size:11px;opacity:.7;margin-bottom:10px">Con '+fmtN(roMes,0)+' rollos al mes - '+fmtN(tarMes,0)+' tarimas/mes</div><div class="po-ig"><div class="po-ii"><div class="po-il">Factura actual / mes</div><div class="po-iv">$'+fmtN(stA2,0)+'</div></div><div class="po-ii"><div class="po-il">Factura Rits / mes</div><div class="po-iv">$'+fmtN(stB2,0)+'</div></div><div class="po-ii"><div class="po-il">Ahorras cada mes</div><div class="po-iv">+$'+fmtN(raG>0?aMesR:aMes,0)+'</div></div><div class="po-ii"><div class="po-il">Ahorras cada anio</div><div class="po-iv">+$'+fmtN(raG>0?aAnualR:aAnual,0)+'</div></div></div></div></div>';
+  } else {
+    h+='<div style="font-size:12px;color:#888;padding:8px 0;font-style:italic">Proyeccion no calculada. Ingresa tu volumen mensual de rollos para incluir el ahorro.</div>';
+  }
+  el('po_body').innerHTML=h;
+  el('po').classList.add('show');
+  el('po').scrollTop=0;
+}
+
+function descargarHTML(){
+  var css=el('report_css').content.textContent||el('report_css').innerHTML;
+  var body='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Reporte Maquilas Rits</title><style>'+css+'</style></head><body>'+
+    '<h1>Auditoria de Pesaje - Stretch Film</h1>'+
+    '<div class="sub">Maquilas Rits | '+el('po_fecha').textContent+'</div>'+
+    el('po_body').innerHTML+
+    '<div class="footer">Reporte generado por Maquilas Rits. Los precios tienen validez solo con cotizacion formal por correo.</div>'+
+    '</body></html>';
+  var blob=new Blob([body],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='Reporte_Auditoria_Rits.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
