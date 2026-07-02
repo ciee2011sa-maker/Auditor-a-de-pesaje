@@ -41,6 +41,12 @@ html, body { margin: 0; padding: 0; background: var(--paper); color: var(--steel
 .rpt-card-lbl { font-size: 7.5pt; color: var(--tech-700); font-weight: 500; margin-bottom: 1mm; }
 .rpt-card-val { font-family: var(--font-display); font-weight: 700; font-size: 13pt; color: var(--steel-700); }
 .rpt-card-sub { font-size: 7.5pt; color: var(--tech-500); margin-top: 1mm; line-height: 1.4; }
+.rpt-impact { background: var(--steel-700); color: var(--paper); padding: 4mm; margin: 4mm 0; }
+.rpt-impact h3 { color: var(--paper); margin: 0 0 2mm; }
+.rpt-impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+.rpt-impact-item { background: rgba(255,255,255,0.12); padding: 2.5mm; text-align: center; }
+.rpt-impact-lbl { font-size: 7.5pt; opacity: 0.8; }
+.rpt-impact-val { font-family: var(--font-display); font-weight: 700; font-size: 11pt; }
 .rpt-footer { margin-top: auto; padding: 4mm 16mm 6mm; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; font-size: 7pt; color: var(--tech-700); }
 .rpt-footer strong { color: var(--steel-700); font-weight: 700; display: block; font-size: 6.5pt; }
 </template>
@@ -61,7 +67,7 @@ body { min-height: 100vh; padding-bottom: 80px; }
 .step-num { display: block; font-size: 13px; margin-bottom: 1px; }
 .panel { display: none; }
 .panel.active { display: block; }
-.cover { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(20px, 5vw, 40px); text-align: center; }
+.cover { min-height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: clamp(20px, 5vw, 40px); text-align: center; }
 .cover-name { font-size: clamp(18px, 5vw, 28px); font-weight: 800; letter-spacing: 2px; margin-bottom: 6px; }
 .cover-tag { font-size: clamp(10px, 2.5vw, 12px); color: #999; margin-bottom: clamp(12px, 3vw, 20px); }
 .cover-divider { width: 32px; height: 3px; background: #c8864a; margin: 0 auto clamp(12px, 3vw, 20px); }
@@ -106,17 +112,20 @@ body { min-height: 100vh; padding-bottom: 80px; }
     </div>
   </div>
 
-  <div class="panel active" id="panel_0">
-    <div class="cover" id="cover_intro">
+  <div class="panel active" id="panel_cover">
+    <div class="cover">
       <div class="cover-name">MAQUILAS RITS</div>
       <div class="cover-tag">Ingeniería en sitio. Datos en papel. Cero dudas.</div>
       <div class="cover-divider"></div>
       <h2>¿Realmente cuesta lo que crees?</h2>
       <p>Analiza el costo real de tu stretch film actual vs nuestra propuesta. Solo necesitas tu factura.</p>
-      <button class="cover-btn" onclick="hideCoverStart()">Comenzar</button>
+      <button class="cover-btn" onclick="startAudit()">Comenzar</button>
       <div style="margin-top:14px;font-size:10px;color:#bbb">Gratuito · Sin datos guardados</div>
     </div>
-    <div class="scard hidden" id="form_0">
+  </div>
+
+  <div class="panel" id="panel_0">
+    <div class="scard">
       <div class="stitle"><span class="snum">1</span>Especificación del rollo</div>
       <div class="sdesc">Ancho, calibre y longitud (de tu factura).</div>
       <div class="g3">
@@ -125,7 +134,7 @@ body { min-height: 100vh; padding-bottom: 80px; }
         <div class="field"><label>Longitud (pies)</label><input type="number" inputmode="decimal" id="a_pies" placeholder="5000" oninput="calcTeoA()"></div>
       </div>
     </div>
-    <button class="nbtn hidden" id="btn_0" onclick="goStep(1)">Siguiente</button>
+    <button class="nbtn" onclick="goStep(1)">Siguiente</button>
   </div>
 
   <div class="panel" id="panel_1">
@@ -168,7 +177,8 @@ body { min-height: 100vh; padding-bottom: 80px; }
       <div class="g2" style="margin-bottom:12px">
         <div class="field"><label>Rollos/mes</label><input type="number" inputmode="decimal" id="proy_rollos" placeholder="840" oninput="calcProy()"></div>
         <div class="field"><label>O kilos/mes</label><input type="number" inputmode="decimal" id="proy_kilos" placeholder="12500" oninput="calcProy()"></div>
-      </div></div>
+      </div>
+      <div id="proy_det" class="hidden"><div id="proy_sbar"></div></div></div>
     <button class="nbtn" onclick="goStep(5)">Siguiente</button>
   </div>
 
@@ -209,7 +219,7 @@ body { min-height: 100vh; padding-bottom: 80px; }
 
 <script>
 var S = { pnA: 0, prA: 0, usaRealA: false, pkgA_input: 0, precio_real_kg: 0, gA: 0, tprA_teo: 0, ctA_real: 0, pnB: 14.5, prB: 14.5, gB_teo: 500, tprB_teo: 29, pkgB_teo: 25, ctB_teo: 0 };
-var cur = 0;
+var cur = 'cover';
 
 function n(id) { return parseFloat(el(id).value) || 0; }
 function el(id) { return document.getElementById(id); }
@@ -217,16 +227,12 @@ function fmt(v) { return '$' + v.toFixed(2); }
 function fmtN(v, d) { return v.toLocaleString('es-MX', {maximumFractionDigits: d||0}); }
 function pesoTeo(a, c, p) { return (a * (c/100) * p * 0.454) / 2500; }
 
-function hideCoverStart() {
-  el('cover_intro').classList.add('hidden');
-  el('form_0').classList.remove('hidden');
-  el('btn_0').classList.remove('hidden');
-  el('st_0').classList.add('active');
-}
-
+function startAudit() { goStep(0); }
 function goStep(s) {
-  el('panel_'+cur).classList.remove('active'); el('st_'+cur).classList.remove('active');
-  cur = s; el('panel_'+s).classList.add('active'); el('st_'+s).classList.add('active');
+  var p = el('panel_'+cur), st = el('st_'+cur);
+  if(p) p.classList.remove('active');
+  if(st) { st.classList.remove('active'); st.classList.add('done'); }
+  cur = s; el('panel_'+s).classList.add('active'); el('st_'+s).classList.remove('done'); el('st_'+s).classList.add('active');
   if(s===6) buildResumen();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -250,11 +256,12 @@ function calcCostoA() {
 }
 
 function calcFase1() { calcCostoA(); }
-function calcProy() {}
+function calcProy() { var ro = n('proy_rollos') > 0 ? n('proy_rollos') : (n('proy_kilos') / (S.usaRealA ? S.prA : S.pnA)); if(ro > 0) el('proy_det').classList.remove('hidden'); }
 
 function buildResumen() {
   var roMes = n('proy_rollos') > 0 ? n('proy_rollos') : (n('proy_kilos') > 0 ? n('proy_kilos') / (S.usaRealA ? S.prA : S.pnA) : 0);
   var tarMes = roMes > 0 ? Math.round(S.tprA_teo * roMes) : 0;
+  var tarMes_rits = roMes > 0 ? Math.round(S.tprB_teo * roMes) : 0;
   var diff = S.ctA_real - S.ctB_teo;
   var aMes = diff * tarMes, aAnual = aMes * 12;
   var html = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px"><div style="padding:10px;text-align:center"><div style="font-size:9px;color:#888">Costo/tarima actual</div><div style="font-size:20px;font-weight:bold">'+fmt(S.ctA_real)+'</div></div><div style="padding:10px;text-align:center"><div style="font-size:9px;color:#888">Costo/tarima RITS</div><div style="font-size:20px;font-weight:bold;color:#c8864a">'+fmt(S.ctB_teo)+'</div></div><div style="padding:10px;text-align:center"><div style="font-size:9px;color:#888">Ahorro/tarima</div><div style="font-size:20px;font-weight:bold;color:#c8864a">'+fmt(diff)+'</div></div></div>';
@@ -269,6 +276,7 @@ function buildResumen() {
 function mostrarReporte() {
   var roMes = n('proy_rollos') > 0 ? n('proy_rollos') : (n('proy_kilos') > 0 ? n('proy_kilos') / (S.usaRealA ? S.prA : S.pnA) : 0);
   var tarMes = roMes > 0 ? Math.round(S.tprA_teo * roMes) : 0;
+  var tarMes_rits = roMes > 0 ? Math.round(S.tprB_teo * roMes) : 0;
   var rollo_rits = roMes > 0 ? Math.round(roMes * S.tprB_teo / S.tprA_teo) : 0;
   var ahorro_rollos = roMes - rollo_rits;
   var diff = S.ctA_real - S.ctB_teo;
@@ -278,7 +286,7 @@ function mostrarReporte() {
   var clienteDireccion = el('cliente_direccion').value || '';
   var validadorNombre = el('validador_nombre').value || '[Validador]', validadorCorreo = el('validador_correo').value || '';
   var css = el('report_css').content.textContent || el('report_css').innerHTML;
-  var body = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Auditoría</title><style>'+css+'</style></head><body><section class="sheet"><header class="rpt-header"><div class="brand"><svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="width:14mm;height:14mm"><circle cx="120" cy="120" r="118" fill="#1A2533"></circle><g fill="none" stroke="#F5F5F0" stroke-opacity="0.22" stroke-width="0.9"><circle cx="120" cy="120" r="110"></circle><circle cx="120" cy="120" r="102"></circle><circle cx="120" cy="120" r="94"></circle></g><path d="M 70 50 L 135 50 C 175 50 175 124 135 124 L 92 124 L 92 190 L 70 190 Z M 92 70 L 132 70 C 152 70 152 104 132 104 L 92 104 Z" fill="#C8864A"></path><path d="M 98 124 L 130 124 L 180 190 L 148 190 Z" fill="#C8864A"></path></svg><div><div class="wm">MAQUILAS RITS</div><div class="wm-bar"></div></div></div><div class="meta"><strong>Maquilas RITS, S.A. de C.V.</strong><br>monroy.i@maquilasrits.com.mx<br>'+fecha+'</div></header><div class="brand-rule-bold"></div><div class="rpt-body"><div style="font-family:var(--font-mono);font-size:8pt;color:var(--tech-700);margin-bottom:5mm">'+fecha+'</div><div style="font-size:9.5pt;line-height:1.5;margin-bottom:6mm"><strong style="color:var(--steel-700)">'+clienteNombre+'</strong><br>'+clienteEmpresa+(clienteDireccion?'<br>'+clienteDireccion:'')+'</div><h1>Auditoría de pesaje</h1><p>Estimado '+clienteNombre+', adjuntamos el análisis técnico de tu consumo real de stretch film.</p><h2>¿Por qué tu costo real es más alto?</h2><div class="rpt-flow"><div class="rpt-flow-item"><div class="rpt-flow-icon">①</div><div class="rpt-flow-text">Tu factura: <strong>'+fmt(S.pkgA_input)+'/kg</strong> a <strong>'+S.pnA.toFixed(2)+' kg teórico</strong></div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">②</div><div class="rpt-flow-text">Pero recibes: <strong>'+S.prA.toFixed(2)+' kg real</strong> ('+((S.pnA - S.prA)/S.pnA*100).toFixed(1)+'% menos)</div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">③</div><div class="rpt-flow-text">Tu precio real/kg: <strong>'+fmt(S.precio_real_kg)+'</strong> (no '+fmt(S.pkgA_input)+')</div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">④</div><div class="rpt-flow-text">Eso es <strong style="color:#e74c3c">'+((S.precio_real_kg / S.pkgA_input - 1)*100).toFixed(1)+'% más</strong> por kilo real</div></div></div><h2>Costo por tarima</h2><div class="rpt-duo"><div class="rpt-card actual"><div class="rpt-card-lbl">Proveedor actual</div><div class="rpt-card-val">'+fmt(S.ctA_real)+'</div><div class="rpt-card-sub">'+S.tprA_teo.toFixed(1)+' tarimas/rollo | '+S.gA+' g</div></div><div class="rpt-card rits"><div class="rpt-card-lbl">Rits ECO</div><div class="rpt-card-val">'+fmt(S.ctB_teo)+'</div><div class="rpt-card-sub">'+S.tprB_teo.toFixed(1)+' tarimas/rollo | '+S.gB_teo+' g</div></div></div><h2>Comparativa de rollos</h2><div class="rpt-compare"><div class="rpt-compare-item"><div class="rpt-compare-lbl">Volumen</div><div class="rpt-compare-val">'+fmtN(roMes,0)+' rollos/mes</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Con proveedor actual</div><div class="rpt-compare-val">'+fmtN(roMes,0)+' rollos = '+fmtN(tarMes,0)+' tarimas</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Con Rits ECO</div><div class="rpt-compare-val">'+fmtN(rollo_rits,0)+' rollos = '+fmtN(rollo_rits,0)+' tarimas</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Reducción</div><div class="rpt-compare-val var">'+fmtN(ahorro_rollos,0)+' rollos/mes | Ahorro: $'+fmtN(aMes,0)+'/mes | $'+fmtN(aAnual,0)+'/año</div></div></div><h2>Conclusión</h2><p>Tu proveedor entrega <strong>'+((S.pnA - S.prA)/S.pnA*100).toFixed(1)+'% menos peso</strong> del que factura. No es un ataque; es matemática. ECOPLAYO documenta el peso en planta.</p><div style="margin-top:10mm"><div style="width:70mm;border-bottom:1px solid var(--line-strong);height:9mm;margin-bottom:1.5mm;"></div><div style="font-weight:600;color:var(--steel-700);font-size:10pt;">'+validadorNombre+'</div><div style="font-family:var(--font-mono);font-size:8pt;color:var(--copper-700);margin-top:0.4mm;">'+validadorCorreo+'</div></div></div><footer class="rpt-footer"><div><strong>Planta</strong>Av. Hipódromo #13, Atizapán de Zaragoza, Edo. Mex.</div><div><strong>Contacto</strong>monroy.i@maquilasrits.com.mx | +52 55 2980 2222</div><div style="text-align:right"><strong>maquilasrits.com.mx</strong><div class="tag">No vendemos playo. Entregamos certeza.</div></div></footer></section></body></html>';
+  var body = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Auditoría</title><style>'+css+'</style></head><body><section class="sheet"><header class="rpt-header"><div class="brand"><svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="width:14mm;height:14mm"><circle cx="120" cy="120" r="118" fill="#1A2533"></circle><g fill="none" stroke="#F5F5F0" stroke-opacity="0.22" stroke-width="0.9"><circle cx="120" cy="120" r="110"></circle><circle cx="120" cy="120" r="102"></circle><circle cx="120" cy="120" r="94"></circle></g><path d="M 70 50 L 135 50 C 175 50 175 124 135 124 L 92 124 L 92 190 L 70 190 Z M 92 70 L 132 70 C 152 70 152 104 132 104 L 92 104 Z" fill="#C8864A"></path><path d="M 98 124 L 130 124 L 180 190 L 148 190 Z" fill="#C8864A"></path></svg><div><div class="wm">MAQUILAS RITS</div><div class="wm-bar"></div></div></div><div class="meta"><strong>Maquilas RITS, S.A. de C.V.</strong><br>monroy.i@maquilasrits.com.mx<br>'+fecha+'</div></header><div class="brand-rule-bold"></div><div class="rpt-body"><div style="font-family:var(--font-mono);font-size:8pt;color:var(--tech-700);margin-bottom:5mm">'+fecha+'</div><div style="font-size:9.5pt;line-height:1.5;margin-bottom:6mm"><strong style="color:var(--steel-700)">'+clienteNombre+'</strong><br>'+clienteEmpresa+(clienteDireccion?'<br>'+clienteDireccion:'')+'</div><h1>Auditoría de pesaje</h1><p>Estimado '+clienteNombre+', adjuntamos el análisis técnico de tu consumo real de stretch film.</p><h2>¿Por qué tu costo real es más alto?</h2><div class="rpt-flow"><div class="rpt-flow-item"><div class="rpt-flow-icon">①</div><div class="rpt-flow-text">Tu factura: <strong>'+fmt(S.pkgA_input)+'/kg</strong> a <strong>'+S.pnA.toFixed(2)+' kg teórico</strong></div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">②</div><div class="rpt-flow-text">Pero recibes: <strong>'+S.prA.toFixed(2)+' kg real</strong> ('+((S.pnA - S.prA)/S.pnA*100).toFixed(1)+'% menos)</div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">③</div><div class="rpt-flow-text">Tu precio real/kg: <strong>'+fmt(S.precio_real_kg)+'</strong> (no '+fmt(S.pkgA_input)+')</div></div><div class="rpt-flow-item"><div class="rpt-flow-icon">④</div><div class="rpt-flow-text">Eso es <strong style="color:#e74c3c">'+((S.precio_real_kg / S.pkgA_input - 1)*100).toFixed(1)+'% más</strong> por kilo real</div></div></div><h2>Costo por tarima</h2><div class="rpt-duo"><div class="rpt-card actual"><div class="rpt-card-lbl">Proveedor actual</div><div class="rpt-card-val">'+fmt(S.ctA_real)+'</div><div class="rpt-card-sub">'+S.tprA_teo.toFixed(1)+' tarimas/rollo | '+S.gA+' g</div></div><div class="rpt-card rits"><div class="rpt-card-lbl">Rits ECO</div><div class="rpt-card-val">'+fmt(S.ctB_teo)+'</div><div class="rpt-card-sub">'+S.tprB_teo.toFixed(1)+' tarimas/rollo | '+S.gB_teo+' g</div></div></div><h2>Comparativa de rollos</h2><div class="rpt-compare"><div class="rpt-compare-item"><div class="rpt-compare-lbl">Volumen</div><div class="rpt-compare-val">'+fmtN(roMes,0)+' rollos/mes</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Con proveedor actual</div><div class="rpt-compare-val">'+fmtN(roMes,0)+' rollos = '+fmtN(tarMes,0)+' tarimas</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Con Rits ECO</div><div class="rpt-compare-val">'+fmtN(rollo_rits,0)+' rollos = '+fmtN(tarMes_rits,0)+' tarimas</div></div><div class="rpt-compare-item"><div class="rpt-compare-lbl">Reducción</div><div class="rpt-compare-val var">'+fmtN(ahorro_rollos,0)+' rollos/mes | Ahorro: $'+fmtN(aMes,0)+'/mes | $'+fmtN(aAnual,0)+'/año</div></div></div><h2>Conclusión</h2><p>Tu proveedor entrega <strong>'+((S.pnA - S.prA)/S.pnA*100).toFixed(1)+'% menos peso</strong> del que factura. No es un ataque; es matemática. ECOPLAYO documenta el peso en planta.</p><div style="margin-top:10mm"><div style="width:70mm;border-bottom:1px solid var(--line-strong);height:9mm;margin-bottom:1.5mm;"></div><div style="font-weight:600;color:var(--steel-700);font-size:10pt;">'+validadorNombre+'</div><div style="font-family:var(--font-mono);font-size:8pt;color:var(--copper-700);margin-top:0.4mm;">'+validadorCorreo+'</div></div></div><footer class="rpt-footer"><div><strong>Planta</strong>Av. Hipódromo #13, Atizapán de Zaragoza, Edo. Mex.</div><div><strong>Contacto</strong>monroy.i@maquilasrits.com.mx | +52 55 2980 2222</div><div style="text-align:right"><strong>maquilasrits.com.mx</strong><div class="tag">No vendemos playo. Entregamos certeza.</div></div></footer></section></body></html>';
   var blob = new Blob([body], {type:'text/html'}), url = URL.createObjectURL(blob);
   el('po_body').innerHTML = '<iframe src="'+url+'" style="width:100%;min-height:80vh;border:none;"></iframe>';
   el('po').classList.add('show');
