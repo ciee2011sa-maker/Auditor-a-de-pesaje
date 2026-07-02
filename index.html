@@ -6,23 +6,23 @@
 
 <!-- CSS del reporte PDF - fuera del JS -->
 <template id="report_css">
-body{font-family:Arial,sans-serif;color:#111;padding:32px;max-width:700px;margin:0 auto}
-h1{font-size:20px;color:#0a5c47;margin-bottom:4px}
+body{font-family:'Inter','DM Sans',sans-serif;color:#1a2533;padding:32px;max-width:700px;margin:0 auto}
+h1{font-size:20px;color:#1a2533;margin-bottom:4px;font-weight:700}
 .sub{font-size:12px;color:#888;margin-bottom:24px}
-h2{font-size:11px;font-weight:bold;color:#0a5c47;text-transform:uppercase;border-bottom:1px solid #0a5c47;padding-bottom:4px;margin:20px 0 10px}
+h2{font-size:11px;font-weight:bold;color:#c8864a;text-transform:uppercase;border-bottom:2px solid #c8864a;padding-bottom:4px;margin:20px 0 10px}
 table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
-th{background:#f5f5f5;padding:7px 10px;text-align:left;border-bottom:1px solid #ddd;font-size:11px;color:#666}
+th{background:#f5f5f5;padding:7px 10px;text-align:left;border-bottom:2px solid #c8864a;font-size:11px;color:#1a2533;font-weight:600}
 td{padding:7px 10px;border-bottom:1px solid #f0f0f0}
 .po-duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .po-box{border-radius:8px;padding:14px;text-align:center}
-.po-box.ra{background:#fef0f0;border:1px solid #f5c0c0}
-.po-box.ga{background:#eaf7f2;border:1px solid #a8dfc8}
-.po-lbl{font-size:11px;color:#888;margin-bottom:4px}
+.po-box.ra{background:#fff3f0;border:2px solid #e74c3c}
+.po-box.ga{background:#f0f8f5;border:2px solid #c8864a}
+.po-lbl{font-size:11px;color:#888;margin-bottom:4px;font-weight:500}
 .po-num{font-size:30px;font-weight:bold}
-.po-num.red{color:#c0392b}
-.po-num.grn{color:#0a5c47}
+.po-num.red{color:#e74c3c}
+.po-num.grn{color:#c8864a}
 .po-sub{font-size:11px;color:#aaa;margin-top:3px}
-.po-imp{background:#0a5c47;color:#fff;border-radius:8px;padding:16px}
+.po-imp{background:#1a2533;color:#fff;border-radius:8px;padding:16px}
 .po-ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .po-ii{border-radius:6px;padding:10px;text-align:center;background:rgba(255,255,255,.15)}
 .po-il{font-size:10px;opacity:.75;margin-bottom:3px}
@@ -31,10 +31,10 @@ td{padding:7px 10px;border-bottom:1px solid #f0f0f0}
 </template>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:#f0f2f0;color:#111;min-height:100vh}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#f5f5f0;color:#1a2533;min-height:100vh}
 .app{max-width:720px;margin:0 auto;background:#fff;min-height:100vh}
-.hdr{background:#0a5c47;padding:16px 20px 0;color:#fff}
+.hdr{background:#1a2533;padding:16px 20px 0;color:#fff}
 .hdr-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px}
 .hdr-text h1{font-size:clamp(13px,4vw,17px);font-weight:bold;line-height:1.3}
 .hdr-text p{font-size:clamp(10px,3vw,12px);opacity:.8;margin-top:3px}
@@ -48,21 +48,21 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
 .panel{display:none}
 .panel.active{display:block}
 .cover{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(24px,6vw,48px) clamp(20px,5vw,40px);text-align:center}
-.cover-name{font-size:clamp(20px,6vw,32px);font-weight:bold;color:#0a5c47;letter-spacing:3px;margin-bottom:8px}
+.cover-name{font-size:clamp(20px,6vw,32px);font-weight:bold;color:#1a2533;letter-spacing:3px;margin-bottom:8px}
 .cover-tag{font-size:clamp(11px,3vw,14px);color:#999;letter-spacing:1px;margin-bottom:clamp(16px,4vw,28px)}
-.cover-divider{width:40px;height:3px;background:#d4b84a;margin:0 auto clamp(16px,4vw,28px)}
-.cover h2{font-size:clamp(17px,5vw,24px);font-weight:bold;color:#1a1a1a;line-height:1.5;max-width:420px;margin-bottom:12px}
+.cover-divider{width:40px;height:3px;background:#c8864a;margin:0 auto clamp(16px,4vw,28px)}
+.cover h2{font-size:clamp(17px,5vw,24px);font-weight:bold;color:#1a2533;line-height:1.5;max-width:420px;margin-bottom:12px}
 .cover p{font-size:clamp(12px,3.5vw,15px);color:#777;line-height:1.8;max-width:380px;margin-bottom:clamp(24px,6vw,40px)}
-.cover-btn{background:#0a5c47;color:#fff;border:none;padding:clamp(12px,3vw,16px) clamp(28px,7vw,44px);border-radius:10px;font-size:clamp(13px,4vw,16px);font-weight:bold;cursor:pointer;width:100%;max-width:320px}
+.cover-btn{background:#1a2533;color:#fff;border:none;padding:clamp(12px,3vw,16px) clamp(28px,7vw,44px);border-radius:10px;font-size:clamp(13px,4vw,16px);font-weight:bold;cursor:pointer;width:100%;max-width:320px}
 .cover-meta{margin-top:16px;font-size:11px;color:#bbb}
 .scard{padding:clamp(16px,4vw,24px);border-bottom:1px solid #eee}
-.stitle{font-size:clamp(13px,3.5vw,15px);font-weight:bold;color:#0a5c47;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.stitle{font-size:clamp(13px,3.5vw,15px);font-weight:bold;color:#1a2533;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .sdesc{font-size:clamp(12px,3.5vw,14px);color:#666;line-height:1.8;margin-bottom:16px}
-.snum{background:#0a5c47;color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
+.snum{background:#c8864a;color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:11px;font-weight:bold;color:#555;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
-.field input{width:100%;padding:clamp(10px,3vw,13px) clamp(10px,3vw,14px);border:1.5px solid #ddd;border-radius:10px;font-size:clamp(15px,4vw,17px);color:#111;background:#fff;appearance:none;-webkit-appearance:none}
-.field input:focus{outline:none;border-color:#0a5c47}
+.field input{width:100%;padding:clamp(10px,3vw,13px) clamp(10px,3vw,14px);border:1.5px solid #ddd;border-radius:10px;font-size:clamp(15px,4vw,17px);color:#1a2533;background:#fff;appearance:none;-webkit-appearance:none}
+.field input:focus{outline:none;border-color:#c8864a}
 .field input.opt{border-style:dashed;background:#fafafa}
 .field input[readonly]{background:#f5f5f5;color:#999}
 .field .sub{font-size:11px;color:#aaa;margin-top:4px;line-height:1.5}
@@ -70,32 +70,32 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
 .g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 .chip{border-radius:8px;padding:clamp(10px,3vw,14px);font-size:clamp(12px,3.5vw,14px);margin:10px 0;line-height:1.8;display:none}
 .chip.info{background:#eaf4fb;border-left:4px solid #2980b9;color:#1a5276}
-.chip.ok{background:#eaf7f2;border-left:4px solid #0a5c47;color:#085041}
+.chip.ok{background:#f0f8f5;border-left:4px solid #c8864a;color:#9b6735}
 .chip.warn{background:#fffae6;border-left:4px solid #f0a500;color:#7d5a00}
-.chip.danger{background:#fef0f0;border-left:4px solid #e74c3c;color:#7b241c}
+.chip.danger{background:#fff3f0;border-left:4px solid #e74c3c;color:#7b241c}
 .chip .big{font-size:clamp(18px,5vw,24px);font-weight:bold;display:block;margin-bottom:4px}
 .chip .det{font-size:clamp(11px,3vw,13px);opacity:.85}
 .note{font-size:clamp(11px,3vw,13px);color:#777;line-height:1.7;padding:10px 14px;background:#f9f9f9;border-radius:8px;margin:10px 0}
-.nbtn{width:100%;padding:clamp(14px,4vw,16px);background:#0a5c47;color:#fff;border:none;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;min-height:52px}
-.nbtn:hover{background:#085041}
-.nbtn.outline{background:#fff;color:#0a5c47;border:2px solid #0a5c47;margin-top:12px;border-radius:10px}
+.nbtn{width:100%;padding:clamp(14px,4vw,16px);background:#1a2533;color:#fff;border:none;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;min-height:52px}
+.nbtn:hover{background:#0f1620}
+.nbtn.outline{background:#fff;color:#1a2533;border:2px solid #1a2533;margin-top:12px;border-radius:10px}
 .nbtn.rounded{border-radius:10px;margin-top:12px}
 .rsec{padding:clamp(16px,4vw,24px);border-bottom:1px solid #eee}
 .rstitle{font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-bottom:14px}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .ccard{border-radius:12px;padding:clamp(14px,4vw,20px) clamp(12px,3vw,18px);text-align:center}
-.ccard.bad{background:#fef0f0;border:2px solid #e74c3c}
-.ccard.good{background:#eaf7f2;border:2px solid #0a5c47}
+.ccard.bad{background:#fff3f0;border:2px solid #e74c3c}
+.ccard.good{background:#f0f8f5;border:2px solid #c8864a}
 .ccard.neutral{background:#fffae6;border:2px solid #f0a500}
 .clbl{font-size:clamp(10px,2.5vw,12px);color:#888;margin-bottom:6px;line-height:1.4}
 .cnum{font-size:clamp(28px,7vw,44px);font-weight:bold;line-height:1;margin-bottom:6px}
-.cnum.red{color:#c0392b}
-.cnum.green{color:#0a5c47}
+.cnum.red{color:#e74c3c}
+.cnum.green{color:#c8864a}
 .cnum.amber{color:#7d5a00}
 .csub{font-size:clamp(10px,2.5vw,12px);color:#aaa}
 .sbar{border-radius:12px;padding:clamp(12px,3vw,16px) clamp(14px,4vw,20px);display:flex;justify-content:space-between;align-items:center;margin:12px 0;gap:10px}
-.sbar.win{background:#0a5c47;color:#fff}
-.sbar.lose{background:#c0392b;color:#fff}
+.sbar.win{background:#c8864a;color:#fff}
+.sbar.lose{background:#e74c3c;color:#fff}
 .sbl{font-size:clamp(12px,3.5vw,14px);font-weight:bold}
 .sbs{font-size:clamp(10px,2.5vw,12px);opacity:.8;margin-top:3px}
 .sbv{font-size:clamp(22px,6vw,32px);font-weight:bold;white-space:nowrap}
@@ -106,40 +106,40 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
 .tbl tr:last-child td{border-bottom:none}
 .tbl4-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tbl4{min-width:480px}
-.tr{background:#fde8e8;color:#c0392b;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
-.tg{background:#eaf7f2;color:#085041;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
-.tb{background:#eaf4fb;color:#1a5276;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.tr{background:#fde8e8;color:#e74c3c;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.tg{background:#f0f8f5;color:#c8864a;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
+.tb{background:#f5f0e6;color:#9b6735;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
 .ty{background:#fffae6;color:#856404;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:bold}
 .sim-wrap{background:#f7f7f7;border-radius:12px;padding:clamp(14px,4vw,18px);margin-top:14px}
-.sim-wrap h3{font-size:clamp(11px,3vw,13px);font-weight:bold;color:#0a5c47;margin-bottom:12px;line-height:1.5}
+.sim-wrap h3{font-size:clamp(11px,3vw,13px);font-weight:bold;color:#1a2533;margin-bottom:12px;line-height:1.5}
 .sim-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .sim-row label{font-size:11px;color:#555;font-weight:bold;text-transform:uppercase;letter-spacing:.4px;flex-basis:100%}
 .sim-row input{width:140px;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:16px}
-.sim-row input:focus{outline:none;border-color:#0a5c47}
+.sim-row input:focus{outline:none;border-color:#c8864a}
 .sim-live{font-size:clamp(12px,3.5vw,14px);flex:1;min-width:120px}
-.techo{background:#eaf7f2;border:1px solid #0a5c47;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:clamp(11px,3vw,13px);color:#085041;line-height:1.8}
+.techo{background:#f0f8f5;border:1px solid #c8864a;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:clamp(11px,3vw,13px);color:#9b6735;line-height:1.8}
 .pblk{border-radius:10px;padding:clamp(12px,3vw,16px);margin-bottom:12px}
-.pblk.ra{background:#fef0f0;border:1px solid #f5c0c0}
-.pblk.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.pblk.ra{background:#fff3f0;border:1px solid #e74c3c}
+.pblk.ga{background:#f0f8f5;border:1px solid #c8864a}
 .pblk h4{font-size:12px;font-weight:bold;margin-bottom:10px}
 .pblk.ra h4{color:#7b241c}
-.pblk.ga h4{color:#085041}
+.pblk.ga h4{color:#9b6735}
 .campo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 @media(max-width:480px){.campo-grid{grid-template-columns:1fr}}
 .campo-box{border-radius:10px;padding:clamp(12px,3vw,16px)}
-.campo-box.ra{background:#fef0f0;border:1px solid #f5c0c0}
-.campo-box.ga{background:#eaf7f2;border:1px solid #a8dfc8}
+.campo-box.ra{background:#fff3f0;border:1px solid #e74c3c}
+.campo-box.ga{background:#f0f8f5;border:1px solid #c8864a}
 .campo-box-title{font-size:12px;font-weight:bold;margin-bottom:12px}
 .campo-box.ra .campo-box-title{color:#7b241c}
-.campo-box.ga .campo-box-title{color:#085041}
-.sumcard{background:#0a5c47;color:#fff;border-radius:12px;margin:0 0 16px;padding:clamp(16px,4vw,22px)}
+.campo-box.ga .campo-box-title{color:#9b6735}
+.sumcard{background:#1a2533;color:#fff;border-radius:12px;margin:0 0 16px;padding:clamp(16px,4vw,22px)}
 .sumcard h3{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
 .sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .si{background:rgba(255,255,255,.1);border-radius:8px;padding:clamp(10px,3vw,14px);text-align:center}
 .si-lbl{font-size:clamp(10px,2.5vw,11px);opacity:.7;margin-bottom:4px;line-height:1.4}
 .si-val{font-size:clamp(18px,5vw,24px);font-weight:bold}
 .si-val.big{font-size:clamp(22px,6vw,30px)}
-.imp-block{background:#0a5c47;color:#fff;border-radius:12px;padding:clamp(14px,4vw,18px);margin-top:0}
+.imp-block{background:#1a2533;color:#fff;border-radius:12px;padding:clamp(14px,4vw,18px);margin-top:0}
 .imp-head{font-size:11px;opacity:.7;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
 .imp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .imp-item{background:rgba(255,255,255,.12);border-radius:8px;padding:clamp(10px,3vw,14px);text-align:center}
@@ -147,10 +147,10 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
 .imp-lbl{font-size:clamp(10px,2.5vw,11px);opacity:.75;margin-bottom:4px}
 .imp-val{font-size:clamp(16px,5vw,22px);font-weight:bold}
 .imp-item.hi .imp-val{font-size:clamp(20px,6vw,28px)}
-.cta-box{background:#f7f7f7;border-radius:12px;padding:clamp(18px,5vw,24px);text-align:center;margin:20px clamp(16px,4vw,24px) 0}
-.cta-box h3{font-size:clamp(14px,4vw,17px);font-weight:bold;color:#0a5c47;margin-bottom:8px}
+.cta-box{background:#f5f5f0;border-radius:12px;padding:clamp(18px,5vw,24px);text-align:center;margin:20px clamp(16px,4vw,24px) 0;border:1px solid #e0dcd3}
+.cta-box h3{font-size:clamp(14px,4vw,17px);font-weight:bold;color:#1a2533;margin-bottom:8px}
 .cta-box p{font-size:clamp(12px,3.5vw,14px);color:#666;line-height:1.8;margin-bottom:16px}
-.cta-main{background:#0a5c47;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;width:100%;min-height:52px}
+.cta-main{background:#c8864a;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-size:clamp(13px,4vw,15px);font-weight:bold;cursor:pointer;width:100%;min-height:52px}
 .cta-note{font-size:10px;color:#aaa;margin-top:12px}
 .hidden{display:none}
 .sep{height:1px;background:#eee}
@@ -206,7 +206,8 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
     <div class="step" id="st_2"><span class="step-num">3</span>Precio</div>
     <div class="step" id="st_3"><span class="step-num">4</span>Consumo</div>
     <div class="step" id="st_4"><span class="step-num">5</span>Comparar</div>
-    <div class="step" id="st_5"><span class="step-num">6</span>Resumen</div>
+    <div class="step" id="st_5"><span class="step-num">6</span>Cliente</div>
+    <div class="step" id="st_6"><span class="step-num">7</span>Resumen</div>
   </div>
 </div>
 
@@ -329,6 +330,23 @@ body{background:#f0f2f0;color:#111;min-height:100vh}
 </div>
 
 <div class="panel" id="panel_5">
+  <div class="scard">
+    <div class="stitle"><span class="snum">6</span>Datos del cliente y validador</div>
+    <div class="sdesc">Ingresa los datos de contacto para el reporte final.</div>
+    <div class="g2">
+      <div class="field"><label>Nombre del cliente</label><input type="text" id="cliente_nombre" placeholder="ej. Juan García" class="opt"></div>
+      <div class="field"><label>Empresa / Razón social</label><input type="text" id="cliente_empresa" placeholder="ej. Plastiques S.A." class="opt"></div>
+    </div>
+    <div class="field"><label>Dirección</label><input type="text" id="cliente_direccion" placeholder="ej. Av. Industrial 123, Ciudad López Mateos" class="opt"></div>
+    <div class="g2">
+      <div class="field"><label>Nombre del validador (Maquilas Rits)</label><input type="text" id="validador_nombre" placeholder="ej. Iván Martínez" class="opt"></div>
+      <div class="field"><label>Correo del validador</label><input type="email" id="validador_correo" placeholder="ej. ivan@maquilasrits.com" class="opt"></div>
+    </div>
+  </div>
+  <button class="nbtn" onclick="goStep(6)">Ver resumen ejecutivo</button>
+</div>
+
+<div class="panel" id="panel_6">
   <div class="rsec">
     <div class="rstitle">Resumen ejecutivo</div>
     <div class="sumcard">
@@ -420,7 +438,7 @@ function goStep(s){
   el('panel_'+s).classList.add('active');
   el('st_'+s).classList.remove('done');
   el('st_'+s).classList.add('active');
-  if(s===5){buildResumen();}
+  if(s===6){buildResumen();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -703,6 +721,7 @@ function mostrarReporte(){
   var ctA=S.usaRealA?S.ctA_real:S.ctA_teo;
   var ctB=S.ctB_teo;
   var diff=ctA-ctB;
+  var pctDiff=ctA>0?(Math.abs(diff)/ctA*100):0;
   var tprA=S.usaRealA?S.tprA_real:S.tprA_teo;
   var proA=S.usaRealA?S.proA_real:S.proA_teo;
   var proB=S.proB_teo;
@@ -725,6 +744,13 @@ function mostrarReporte(){
   var hoy=new Date();
   el('po_fecha').textContent=hoy.getDate()+'/'+(hoy.getMonth()+1)+'/'+hoy.getFullYear();
   var h='';
+  var clienteNombre=document.getElementById('cliente_nombre').value||'Cliente';
+  var clienteEmpresa=document.getElementById('cliente_empresa').value||'Empresa';
+  var clienteDireccion=document.getElementById('cliente_direccion').value||'';
+  var validadorNombre=document.getElementById('validador_nombre').value||'Maquilas Rits';
+  var validadorCorreo=document.getElementById('validador_correo').value||'';
+  h+='<div class="po-sec" style="border-bottom:2px solid #c8864a;padding-bottom:20px"><div style="font-size:13px;font-weight:bold;color:#1a2533;margin-bottom:10px">Datos del cliente</div><div style="font-size:12px;line-height:1.8;color:#555"><div><strong>Nombre:</strong> '+clienteNombre+'</div><div><strong>Empresa:</strong> '+clienteEmpresa+'</div>'+(clienteDireccion?'<div><strong>Dirección:</strong> '+clienteDireccion+'</div>':'')+
+    '</div><div style="font-size:12px;line-height:1.8;color:#555;margin-top:14px"><div><strong>Validador:</strong> '+validadorNombre+'</div>'+(validadorCorreo?'<div><strong>Contacto:</strong> '+validadorCorreo+'</div>':'')+'</div></div>';
   h+='<div class="po-sec"><h2>Especificacion del rollo</h2><table class="po-tbl"><thead><tr><th>Dato</th><th>Proveedor actual</th><th>Rits ECO</th></tr></thead><tbody>'+
     '<tr><td>Calibre (gauge)</td><td>'+n('a_cal')+'</td><td>'+n('b_cal')+'</td></tr>'+
     '<tr><td>Ancho (pulgadas)</td><td>'+n('a_ancho')+'</td><td>'+n('b_ancho')+'</td></tr>'+
@@ -732,7 +758,8 @@ function mostrarReporte(){
     '<tr><td>Peso teorico</td><td>'+S.pnA.toFixed(2)+' kg</td><td>'+S.pnB.toFixed(2)+' kg</td></tr>'+
     (S.usaRealA?'<tr><td>Peso real en almacen</td><td>'+S.prA.toFixed(2)+' kg</td><td>'+S.prB.toFixed(2)+' kg</td></tr>':'')+
     '</tbody></table></div>';
-  h+='<div class="po-sec"><h2>Costo por tarima envuelta</h2><div class="po-duo"><div class="po-box ra"><div class="po-lbl">Proveedor actual</div><div class="po-num red">'+fmt(ctA)+'</div><div class="po-sub">'+S.gA+' g/tarima | '+fmt(S.usaRealA?S.pkgA_real:S.pkgA_teo)+'/kg</div></div><div class="po-box ga"><div class="po-lbl">Rits ECO</div><div class="po-num grn">'+fmt(ctB)+'</div><div class="po-sub">'+S.gB_teo.toFixed(0)+' g/tarima | '+fmt(S.pkgB_teo)+'/kg</div></div></div></div>';
+  h+='<div class="po-sec"><h2>Costo por tarima envuelta</h2><div class="po-duo"><div class="po-box ra"><div class="po-lbl">Proveedor actual</div><div class="po-num red">'+fmt(ctA)+'</div><div class="po-sub">'+S.gA+' g/tarima | '+fmt(S.usaRealA?S.pkgA_real:S.pkgA_teo)+'/kg</div></div><div class="po-box ga"><div class="po-lbl">Rits ECO</div><div class="po-num grn">'+fmt(ctB)+'</div><div class="po-sub">'+S.gB_teo.toFixed(0)+' g/tarima | '+fmt(S.pkgB_teo)+'/kg</div></div></div><div class="po-duo" style="margin-top:0;margin-bottom:0"><div class="po-box ra" style="background:#fff3f0;border:1px solid #c8864a"><div class="po-lbl">Tarimas con actual (teorico)</div><div class="po-num red">'+tprA.toFixed(1)+'</div><div class="po-sub">por rollo</div></div><div class="po-box ga" style="background:#f0f8f5;border:1px solid #c8864a"><div class="po-lbl">Tarimas con Rits (teorico)</div><div class="po-num grn">'+S.tprB_teo.toFixed(1)+'</div><div class="po-sub">por rollo</div></div></div></div>';
+  h+='<div class="po-sec"><h2>Ahorro por tarima</h2><div style="background:#f5f0e6;border-left:4px solid #c8864a;border-radius:6px;padding:12px 14px;font-size:12px;line-height:1.6;color:#1a2533"><div style="margin-bottom:8px"><strong>Comparativa:</strong></div><div>Proveedor actual: '+fmt(ctA)+' / tarima</div><div>Rits ECO: '+fmt(ctB)+' / tarima</div><div style="margin-top:8px;padding-top:8px;border-top:1px solid #e0dcd3"><strong>Ahorro: '+(diff>=0?'+':'')+fmt(diff)+' / tarima ('+(diff>=0?'+':'')+pctDiff.toFixed(1)+'%)</strong></div></div></div>';
   if(raG>0||rbG>0){
     h+='<div class="po-sec"><h2>Medicion real en campo</h2><table class="po-tbl"><thead><tr><th>Dato</th><th>Actual real</th><th>Rits real</th></tr></thead><tbody>'+
       '<tr><td>Gramos por tarima</td><td>'+(raG>0?raG+' g':'--')+'</td><td>'+(rbG>0?rbG+' g':'--')+'</td></tr>'+
@@ -741,7 +768,8 @@ function mostrarReporte(){
       '</tbody></table></div>';
   }
   if(roMes>0&&proB>0){
-    h+='<div class="po-sec"><h2>Impacto economico</h2><div class="po-imp"><div style="font-size:11px;opacity:.7;margin-bottom:10px">Con '+fmtN(roMes,0)+' rollos al mes - '+fmtN(tarMes,0)+' tarimas/mes</div><div class="po-ig"><div class="po-ii"><div class="po-il">Factura actual / mes</div><div class="po-iv">$'+fmtN(stA2,0)+'</div></div><div class="po-ii"><div class="po-il">Factura Rits / mes</div><div class="po-iv">$'+fmtN(stB2,0)+'</div></div><div class="po-ii"><div class="po-il">Ahorras cada mes</div><div class="po-iv">+$'+fmtN(raG>0?aMesR:aMes,0)+'</div></div><div class="po-ii"><div class="po-il">Ahorras cada anio</div><div class="po-iv">+$'+fmtN(raG>0?aAnualR:aAnual,0)+'</div></div></div></div></div>';
+    var pctMes=(aMes>0&&stA2>0)?(Math.abs(aMes)/stA2*100):0;
+    h+='<div class="po-sec"><h2>Impacto economico</h2><div class="po-imp"><div style="font-size:11px;opacity:.7;margin-bottom:10px">Con '+fmtN(roMes,0)+' rollos al mes - '+fmtN(tarMes,0)+' tarimas/mes</div><div class="po-ig"><div class="po-ii"><div class="po-il">Factura actual / mes</div><div class="po-iv">$'+fmtN(stA2,0)+'</div></div><div class="po-ii"><div class="po-il">Factura Rits / mes</div><div class="po-iv">$'+fmtN(stB2,0)+'</div></div><div class="po-ii"><div class="po-il">Ahorras cada mes</div><div class="po-iv">'+(raG>0?'+':'')+' $'+fmtN(raG>0?aMesR:aMes,0)+'</div><div style="font-size:9px;opacity:.8;margin-top:2px">'+(pctMes>0?'('+pctMes.toFixed(1)+'% reduccion)':'')+' </div></div><div class="po-ii"><div class="po-il">Ahorras cada anio</div><div class="po-iv">'+(raG>0?'+':'')+' $'+fmtN(raG>0?aAnualR:aAnual,0)+'</div></div></div></div></div>';
   } else {
     h+='<div style="font-size:12px;color:#888;padding:8px 0;font-style:italic">Proyeccion no calculada. Ingresa tu volumen mensual de rollos para incluir el ahorro.</div>';
   }
